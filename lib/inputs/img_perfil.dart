@@ -84,6 +84,8 @@ class ImagenPerfil extends StatelessWidget {
   }
 }
 
+enum TypePicker { Camara, Galeria, Seleccionar }
+
 class ImageFormField extends FormField<String> {
   @override
   // ignore: overridden_fields
@@ -96,12 +98,10 @@ class ImageFormField extends FormField<String> {
   final FormFieldValidator<String>? validator;
 
   final Function(String?)? onChanged;
-
-  final BuildContext contex;
   final Widget? child;
   final double? width;
   final double? height;
-
+  final TypePicker? typePicker;
   final double elevation;
   final BorderRadius borderRadius;
 
@@ -112,9 +112,9 @@ class ImageFormField extends FormField<String> {
       this.child,
       this.width,
       this.height,
-      required this.contex,
       this.initialValue,
       this.borderRadius = BorderRadius.zero,
+      this.typePicker = TypePicker.Seleccionar,
       this.onChanged,
       this.elevation = 0})
       : super(
@@ -126,13 +126,28 @@ class ImageFormField extends FormField<String> {
 
             builder: (FormFieldState<String> state) {
               return InkWell(
-                onTap: () {
-                  SubuirFotos.selectCamera(contex: contex).then((value) {
+                onTap: () async {
+                  String? path;
+
+                  switch (typePicker!) {
+                    case TypePicker.Camara:
+                     path= (await SubuirFotos.cameraImage())?.path;
+                      break;
+                    case TypePicker.Galeria:
+                      path= (await SubuirFotos.getImageLibrary())?.path;
+                      break;
+                    case TypePicker.Seleccionar:
+                      path= (await SubuirFotos.selectCamera(contex: state.context))?.path;
+                      break;
+                  }
+                  
+                  if(path!=null){
                     if (onChanged != null) {
-                      onChanged(value!.path);
+                      onChanged(path);
                     }
-                    state.didChange(value!.path);
-                  });
+                    state.didChange(path);
+                  }
+                  
                 },
                 child: SizedBox(
                   height: height,
