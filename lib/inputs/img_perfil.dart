@@ -10,8 +10,7 @@ class ImagenPerfil extends StatelessWidget {
   final BorderRadius? borderRadius;
   final Color? color;
   final Widget? child;
-  final String? url;
-  final File? fileImage;
+  final String? imgPath;
   final double? height;
   final double? width;
 
@@ -21,8 +20,7 @@ class ImagenPerfil extends StatelessWidget {
     this.child,
     this.borderRadius = BorderRadius.zero,
     this.color,
-    this.url,
-    this.fileImage,
+    this.imgPath,
     this.height,
     this.width,
   }) : super(key: key);
@@ -30,17 +28,17 @@ class ImagenPerfil extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color? elcolor = Colors.white.withOpacity(0.001);
+    Widget imgen = _error();
+
     if (color != null) elcolor = color;
 
-    Widget imgen = _error();
-    if (url != null && fileImage != null) {
-      imgen = _error();
-    } else if (url != null) {
-      imgen = _imagenUrl(url!);
-    } else if (fileImage != null) {
-      imgen = _imagenFile(fileImage!);
-    } else {
-      imgen = _error();
+    if (imgPath != null) {
+      var isweb = imgPath!.contains("http");
+      if (isweb) {
+        imgen = _imagenUrl(imgPath!);
+      } else {
+        imgen = _imagenFile(File(imgPath!));
+      }
     }
 
     return Material(
@@ -98,7 +96,7 @@ class ImageFormField extends FormField<String> {
   final FormFieldValidator<String>? validator;
 
   final Function(String?)? onChanged;
-  
+
   final BuildContext contex;
   final Widget? child;
   final double? width;
@@ -127,14 +125,6 @@ class ImageFormField extends FormField<String> {
             // autovalidate: autovalidate,
 
             builder: (FormFieldState<String> state) {
-              String? url;
-              File? file;
-              if ((state.value?.split("://").length ?? 0) > 1) {
-                url = state.value!;
-              } else {
-                file = File(state.value!);
-              }
-
               return InkWell(
                 onTap: () {
                   SubuirFotos.selectCamera(contex: contex).then((value) {
@@ -155,8 +145,7 @@ class ImageFormField extends FormField<String> {
                             ? Colors.red[900]
                             : Colors.white.withOpacity(0.001),
                         borderRadius: borderRadius,
-                        url: url,
-                        fileImage: file,
+                        imgPath: state.value,
                         width: width,
                         height: height,
                         child: child,
