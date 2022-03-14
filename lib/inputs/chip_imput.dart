@@ -257,3 +257,151 @@ class ChipFormField<T> extends FormField<List<ChipItem<T>?>> {
           },
         );
 }
+
+class ChipDialog<T> extends StatefulWidget {
+  final InputDecoration? decoration;
+  final List<ChipItem> data;
+  final Chip Function(ChipItem<T>? vlue) chipBuilder;
+  final Chip Function(ChipItem<T>? vlue)? selectChipBuilder;
+  final void Function(List<T> val) onChanged;
+  const ChipDialog({
+    Key? key,
+    this.decoration,
+    required this.data,
+    required this.chipBuilder,
+    this.selectChipBuilder,
+    required this.onChanged,
+  }) : super(key: key);
+
+  @override
+  _ChipDialogState createState() => _ChipDialogState();
+}
+
+class _ChipDialogState extends State<ChipDialog> {
+  String _value = "";
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(50),
+      onTap: () {
+        showDialog<List<ChipItem>>(
+          context: context,
+          builder: (contex) {
+            return _ChipDialog(
+              data: widget.data,
+              chipBuilder: widget.chipBuilder,
+              selectChipBuilder: widget.selectChipBuilder ?? widget.chipBuilder,
+            );
+          },
+        ).then((value) {
+          if (value != null) {
+            var values = value.map((e) => e.value).toList();
+            var tex = value.map((e) => e.tex).toList();
+            widget.onChanged(values);
+            setState(() {
+              _value = tex.join(',');
+            });
+          }
+        });
+      },
+      child: InputDecorator(
+        decoration: widget.decoration ?? const InputDecoration(),
+        child: _value.isNotEmpty
+            ? Text(
+                _value,
+                overflow: TextOverflow.ellipsis,
+              )
+            : null,
+      ),
+    );
+  }
+}
+
+class _ChipDialog extends StatefulWidget {
+  final List<ChipItem> data;
+  final Chip Function(ChipItem? theme) chipBuilder;
+  final Chip Function(ChipItem? vlue) selectChipBuilder;
+
+  _ChipDialog({
+    Key? key,
+    required this.data,
+    required this.chipBuilder,
+    required this.selectChipBuilder,
+  }) : super(key: key);
+
+  @override
+  State<_ChipDialog> createState() => __ChipDialogState();
+}
+
+class __ChipDialogState extends State<_ChipDialog> {
+  List<int> activos = [];
+  List<ChipItem> data = [];
+
+  @override
+  void initState() {
+    super.initState();
+    data = widget.data;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      contentPadding: const EdgeInsets.all(10),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(onChanged: (value) {
+            setState(() {
+              data = widget.data
+                  .where((element) =>
+                      element.tex.toLowerCase().contains(value.toLowerCase()))
+                  .toList();
+            });
+          }),
+          const Divider(height: 10),
+          SizedBox(
+            height: 200,
+            child: SingleChildScrollView(
+              child: Wrap(
+                children: generarData(),
+              ),
+            ),
+          )
+        ],
+      ),
+      actions: [
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop(widget.data
+                .where((element) => activos.contains(element.hashCode))
+                .toList());
+          },
+          child: const Text('Aceptar'),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> generarData() {
+    return data
+        .map(
+          (e) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 2),
+            child: GestureDetector(
+              onTap: () {
+                if (activos.contains(e.hashCode)) {
+                  activos.remove(e.hashCode);
+                } else {
+                  activos.add(e.hashCode);
+                }
+                setState(() {});
+              },
+              child: activos.contains(e.hashCode)
+                  ? widget.selectChipBuilder(e)
+                  : widget.chipBuilder(e),
+            ),
+          ),
+        )
+        .toList();
+  }
+}

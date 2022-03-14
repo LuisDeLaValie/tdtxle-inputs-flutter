@@ -17,9 +17,9 @@ class ImagenPerfil extends StatelessWidget {
   const ImagenPerfil({
     Key? key,
     required this.elevation,
-    this.child,
     this.borderRadius = BorderRadius.zero,
     this.color,
+    this.child,
     this.imgPath,
     this.height,
     this.width,
@@ -105,19 +105,19 @@ class ImageFormField extends FormField<String> {
   final double elevation;
   final BorderRadius borderRadius;
 
-  ImageFormField(
-      {Key? key,
-      this.onSaved,
-      this.validator,
-      this.child,
-      this.width,
-      this.height,
-      this.initialValue,
-      this.borderRadius = BorderRadius.zero,
-      this.typePicker = TypePicker.Seleccionar,
-      this.onChanged,
-      this.elevation = 0})
-      : super(
+  ImageFormField({
+    Key? key,
+    this.initialValue,
+    this.onSaved,
+    this.validator,
+    this.onChanged,
+    this.child,
+    this.width,
+    this.height,
+    this.typePicker = TypePicker.Seleccionar,
+    this.elevation = 0,
+    this.borderRadius = BorderRadius.zero,
+  }) : super(
             key: key,
             onSaved: onSaved,
             validator: validator,
@@ -131,23 +131,24 @@ class ImageFormField extends FormField<String> {
 
                   switch (typePicker!) {
                     case TypePicker.Camara:
-                     path= (await SubuirFotos.cameraImage())?.path;
+                      path = (await SubuirFotos.cameraImage())?.path;
                       break;
                     case TypePicker.Galeria:
-                      path= (await SubuirFotos.getImageLibrary())?.path;
+                      path = (await SubuirFotos.getImageLibrary())?.path;
                       break;
                     case TypePicker.Seleccionar:
-                      path= (await SubuirFotos.selectCamera(contex: state.context))?.path;
+                      path = (await SubuirFotos.selectCamera(
+                              contex: state.context))
+                          ?.path;
                       break;
                   }
-                  
-                  if(path!=null){
+
+                  if (path != null) {
                     if (onChanged != null) {
                       onChanged(path);
                     }
                     state.didChange(path);
                   }
-                  
                 },
                 child: SizedBox(
                   height: height,
