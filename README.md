@@ -138,5 +138,5 @@ dependencies:
   tdtxle_inputs_flutter:
     git:
       url: git://github.com/LuisDeLaValie/tdtxle_inputs_flutter.git
-      ref: 1172b2f # commit hash
+      ref: a25a74a9edd9bc32ba01b26033b6b89794105819 # commit hash
 ```
