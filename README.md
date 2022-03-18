@@ -1,5 +1,38 @@
 # TDTxLE_Inputs_Flutter
 
+TDTxLE_Inputs_Flutter is a bundle of custom input widgets used on a daily basis
+
+<img src="media/img.gif" height="400"><img src="media/chip1.gif" height="400"><img src="media/chip2.gif" height="400"><img src="media/select.gif" height="400">
+
+## Use
+---
+
+Dependency with the specific **branch**:
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+
+ tdtxle_inputs_flutter:
+    git:
+      url: https://github.com/LuisDeLaValie/tdtxle_inputs_flutter.git
+      ref: master # branch name
+
+```
+
+Dependency with the specific **commit**:
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+
+  tdtxle_inputs_flutter:
+    git:
+      url: https://github.com/LuisDeLaValie/tdtxle_inputs_flutter.git
+      ref: 392fe22 # commit hash
+```
+
+
 
 <details>
   <summary>Input IMG</summary>
@@ -112,31 +145,3 @@ ChipDialog displays a Dialog to be able to choose between already established op
 
 
 </details>
-
-
-## Use
-
-Dependency with the specific **branch**:
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-
-  tdtxle_inputs_flutter:
-    git:
-      url: git://github.com/LuisDeLaValie/tdtxle_inputs_flutter.git
-      ref: master # branch name
-
-```
-
-Dependency with the specific **commit**:
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-
-  tdtxle_inputs_flutter:
-    git:
-      url: git://github.com/LuisDeLaValie/tdtxle_inputs_flutter.git
-      ref: a25a74a9edd9bc32ba01b26033b6b89794105819 # commit hash
-```

@@ -621,7 +621,7 @@ class _SelectFieldState extends State<SelectField> {
   @override
   void dispose() {
     _focusNode.dispose();
-    _overlayEntry.remove();
+     _overlayEntry.dispose();
 
     super.dispose();
   }
@@ -643,7 +643,6 @@ class _SelectFieldState extends State<SelectField> {
           });
           _settingsTextField.onChanged?.call(value);
         },
-
       ),
     );
   }
