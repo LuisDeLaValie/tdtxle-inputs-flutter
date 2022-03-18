@@ -1,25 +1,47 @@
+import 'dart:developer';
 import 'dart:ui' as ui show BoxHeightStyle, BoxWidthStyle;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class SelectItem<T> {
+class SelectItem<T> extends ListTile {
   final T value;
   final String search;
-  final Widget child;
+  final Widget title;
+  final void Function()? onTap;
 
-  SelectItem(this.value, this.search, this.child);
+  const SelectItem({
+    Key? key,
+    required this.value,
+    required this.search,
+    required this.title,
+    this.onTap,
+  }) : super(
+          key: key,
+          title: title,
+          onTap: onTap,
+        );
+
+  SelectItem<T> copyWith({
+    T? value,
+    String? search,
+    Widget? title,
+    void Function()? onTap,
+  }) {
+    return SelectItem<T>(
+      value: value ?? this.value,
+      search: search ?? this.search,
+      title: title ?? this.title,
+      onTap: onTap ?? this.onTap,
+    );
+  }
 }
 
-class SelectField<T> extends StatefulWidget {
-  final List<SelectItem<T>> values;
-  final double? height;
-  const SelectField({
+class SelectFieldSettings {
+  SelectFieldSettings({
     Key? key,
     this.controller,
-    required this.values,
-    this.height,
     this.focusNode,
     this.decoration = const InputDecoration(),
     TextInputType? keyboardType,
@@ -125,8 +147,7 @@ class SelectField<T> extends StatefulWidget {
                     cut: true,
                     selectAll: true,
                     paste: true,
-                  )),
-        super(key: key);
+                  ));
 
   /// Controls the text being edited.
   ///
@@ -500,6 +521,65 @@ class SelectField<T> extends StatefulWidget {
 
   /// {@macro flutter.services.TextInputConfiguration.enableIMEPersonalizedLearning}
   final bool enableIMEPersonalizedLearning;
+}
+
+class SelectListSettings {
+  final double elevation;
+  final AlignmentGeometry? alignment;
+  final EdgeInsetsGeometry? padding;
+  final Color? color;
+  final Decoration? decoration;
+  final Decoration? foregroundDecoration;
+  final double? width;
+  final double? height;
+  final BoxConstraints? constraints;
+  final EdgeInsetsGeometry? margin;
+  final Matrix4? transform;
+  final AlignmentGeometry? transformAlignment;
+  final Clip clipBehavior;
+  SelectListSettings({
+    this.elevation = 0.0,
+    this.alignment,
+    this.padding,
+    this.color,
+    this.decoration,
+    this.foregroundDecoration,
+    this.width,
+    this.height,
+    BoxConstraints? constraints,
+    this.margin,
+    this.transform,
+    this.transformAlignment,
+    this.clipBehavior = Clip.none,
+  })  : assert(margin == null || margin.isNonNegative),
+        assert(padding == null || padding.isNonNegative),
+        assert(decoration == null || decoration.debugAssertIsValid()),
+        assert(constraints == null || constraints.debugAssertIsValid()),
+        assert(clipBehavior != null),
+        assert(decoration != null || clipBehavior == Clip.none),
+        assert(
+          color == null || decoration == null,
+          'Cannot provide both a color and a decoration\n'
+          'To provide both, use "decoration: BoxDecoration(color: color)".',
+        ),
+        constraints = (width != null || height != null)
+            ? constraints?.tighten(width: width, height: height) ??
+                BoxConstraints.tightFor(width: width, height: height)
+            : constraints;
+}
+
+class SelectField<T> extends StatefulWidget {
+  final List<SelectItem<T>> values;
+  final SelectFieldSettings? settingsTextField;
+  final SelectListSettings? settingsList;
+  final void Function(T)? onSelected;
+  const SelectField({
+    Key? key,
+    required this.values,
+    this.settingsTextField,
+    this.settingsList,
+    this.onSelected,
+  }) : super(key: key);
 
   @override
   State<SelectField> createState() => _SelectFieldState();
@@ -507,23 +587,35 @@ class SelectField<T> extends StatefulWidget {
 
 class _SelectFieldState extends State<SelectField> {
   late FocusNode _focusNode;
+  late TextEditingController _controller;
   late OverlayEntry _overlayEntry;
   final LayerLink _layerLink = LayerLink();
+
+  late SelectFieldSettings _settingsTextField;
+  late SelectListSettings _settingsList;
 
   String _search = "";
 
   @override
   void initState() {
     super.initState();
-    _focusNode = widget.focusNode ?? FocusNode();
+    _settingsTextField = widget.settingsTextField ?? SelectFieldSettings();
+    _settingsList = widget.settingsList ?? SelectListSettings();
+    init();
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
+        _search = _controller.text;
         _overlayEntry = _createOverlayEntry();
         Overlay.of(context)!.insert(_overlayEntry);
       } else {
         _overlayEntry.remove();
       }
     });
+  }
+
+  void init() {
+    _focusNode = _settingsTextField.focusNode ?? FocusNode();
+    _controller = _settingsTextField.controller ?? TextEditingController();
   }
 
   @override
@@ -540,12 +632,18 @@ class _SelectFieldState extends State<SelectField> {
       link: _layerLink,
       child: TextField(
         focusNode: _focusNode,
-        decoration: widget.decoration,
+        controller: _controller,
+        enabled: _settingsTextField.enabled,
+        keyboardType: _settingsTextField.keyboardType,
+        style: _settingsTextField.style,
+        decoration: _settingsTextField.decoration,
         onChanged: (String value) {
           setState(() {
             _search = value;
           });
+          _settingsTextField.onChanged?.call(value);
         },
+
       ),
     );
   }
@@ -565,11 +663,19 @@ class _SelectFieldState extends State<SelectField> {
                 showWhenUnlinked: false,
                 offset: Offset(0.0, size.height + 5.0),
                 child: Material(
-                  elevation: 4.0,
+                  elevation: _settingsList.elevation,
                   child: Container(
-                    constraints: BoxConstraints(
-                      maxHeight: widget.height ?? 150.0,
-                    ),
+                    alignment: _settingsList.alignment,
+                    width: _settingsList.width,
+                    height: _settingsList.height,
+                    color: _settingsList.color,
+                    decoration: _settingsList.decoration,
+                    constraints: _settingsList.constraints,
+                    margin: _settingsList.margin,
+                    padding: _settingsList.padding,
+                    transform: _settingsList.transform,
+                    transformAlignment: _settingsList.transformAlignment,
+                    clipBehavior: _settingsList.clipBehavior,
                     child: ListView(
                       padding: EdgeInsets.zero,
                       shrinkWrap: true,
@@ -577,8 +683,23 @@ class _SelectFieldState extends State<SelectField> {
                           .where((element) => element.search
                               .toLowerCase()
                               .contains(_search.toLowerCase()))
-                          .map((element) => element.child)
-                          .toList(),
+                          .map(
+                        (element) {
+                          var aux = element.copyWith(onTap: () {
+                            if (widget.onSelected != null) {
+                              widget.onSelected!(element.value);
+                            }
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            setState(() {
+                              _controller.text = element.search;
+                            });
+                            log("InkWell :: onTap");
+                            element.onTap?.call();
+                          });
+
+                          return aux;
+                        },
+                      ).toList(),
                     ),
                   ),
                 ),
