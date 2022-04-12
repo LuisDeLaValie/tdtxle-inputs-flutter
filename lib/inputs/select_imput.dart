@@ -1,5 +1,6 @@
 // ignore_for_file: overridden_fields
 
+import 'dart:async';
 import 'dart:developer';
 import 'dart:ui' as ui show BoxHeightStyle, BoxWidthStyle;
 
@@ -7,11 +8,18 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+/// Item primcipal del buscador
 class SelectItem<T> extends ListTile {
   final T value;
   final String search;
   @override
   final Widget title;
+  @override
+  final Widget? subtitle;
+  @override
+  final Widget? trailing;
+  @override
+  final Widget? leading;
   @override
   final void Function()? onTap;
 
@@ -20,10 +28,16 @@ class SelectItem<T> extends ListTile {
     required this.value,
     required this.search,
     required this.title,
+    this.subtitle,
+    this.trailing,
+    this.leading,
     this.onTap,
   }) : super(
           key: key,
           title: title,
+          subtitle: subtitle,
+          leading: leading,
+          trailing: trailing,
           onTap: onTap,
         );
 
@@ -31,17 +45,24 @@ class SelectItem<T> extends ListTile {
     T? value,
     String? search,
     Widget? title,
+    Widget? subtitle,
+    Widget? trailing,
+    Widget? leading,
     void Function()? onTap,
   }) {
     return SelectItem<T>(
       value: value ?? this.value,
       search: search ?? this.search,
       title: title ?? this.title,
+      subtitle: subtitle ?? this.subtitle,
+      trailing: trailing ?? this.trailing,
+      leading: leading ?? this.leading,
       onTap: onTap ?? this.onTap,
     );
   }
 }
 
+/// Estilo para el imput del buscardor
 class SelectFieldSettings extends TextField {
   /// Controls the text being edited.
   ///
@@ -708,6 +729,7 @@ class SelectFieldSettings extends TextField {
   }
 }
 
+/// Estilo para la lista dal buscador
 class SelectListSettings extends Container {
   SelectListSettings({
     Key? key,
@@ -864,6 +886,93 @@ class SelectListSettings extends Container {
   }
 }
 
+/// Widget principal del buscador
+class Search<T> extends StatefulWidget {
+  final ValueNotifier<List<SelectItem<T>>> values;
+  final SelectFieldSettings? settingsTextField;
+  final SelectListSettings? settingsList;
+
+  Search({
+    Key? key,
+    required this.values,
+    this.settingsTextField,
+    this.settingsList,
+  }) : super(key: key);
+
+  @override
+  State<Search<T>> createState() => _SearchState<T>();
+}
+
+class _SearchState<T> extends State<Search<T>> {
+  final LayerLink _layerLink = LayerLink();
+  late OverlayEntry _overlayEntry;
+
+  late SelectFieldSettings _settingsTextField;
+  late SelectListSettings _settingsList;
+
+  late FocusNode _focusNode;
+  @override
+  void initState() {
+    super.initState();
+    _settingsTextField = widget.settingsTextField ?? SelectFieldSettings();
+    _settingsList = widget.settingsList ?? SelectListSettings();
+
+    _focusNode = _settingsTextField.focusNode ?? FocusNode();
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        _overlayEntry = createOverlayEntry();
+        Overlay.of(context)!.insert(_overlayEntry);
+      } else {
+        _overlayEntry.remove();
+      }
+    });
+
+    _settingsTextField = _settingsTextField.copyWith(focusNode: _focusNode);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: _settingsTextField,
+    );
+  }
+
+  OverlayEntry createOverlayEntry() {
+    RenderBox renderBox = context.findRenderObject() as RenderBox;
+    var size = renderBox.size;
+    var offset = renderBox.localToGlobal(Offset.zero);
+
+    return OverlayEntry(
+      builder: (context) => Positioned(
+        left: offset.dx,
+        top: offset.dy + size.height + 5.0,
+        width: size.width,
+        child: CompositedTransformFollower(
+          link: _layerLink,
+          showWhenUnlinked: false,
+          offset: Offset(0.0, size.height + 5.0),
+          child: Material(
+            elevation: _settingsList.elevation,
+            child: _settingsList.copyWith(
+              child: ValueListenableBuilder(
+                  valueListenable: widget.values,
+                  builder: (context, List<SelectItem<T>> v, c) {
+                    return ListView(
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      children: v,
+                    );
+                  }),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Widget para combertir el [Search] en un Field widget
 class SelectField<T> extends StatefulWidget {
   final List<SelectItem<T>> values;
   final SelectFieldSettings? settingsTextField;
@@ -884,122 +993,177 @@ class SelectField<T> extends StatefulWidget {
 class _SelectFieldState extends State<SelectField> {
   late FocusNode _focusNode;
   late TextEditingController _controller;
-  late OverlayEntry _overlayEntry;
-  final LayerLink _layerLink = LayerLink();
 
   late SelectFieldSettings _settingsTextField;
   late SelectListSettings _settingsList;
+  final ValueNotifier<List<SelectItem<dynamic>>> _values =
+      ValueNotifier<List<SelectItem<dynamic>>>([]);
 
-  String _search = "";
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
-    init();
+    var auxfield = widget.settingsTextField ?? SelectFieldSettings();
+    var auxlist = widget.settingsList ?? SelectListSettings();
 
-    _focusNode.addListener(() {
-      if (_focusNode.hasFocus) {
-        _search = _controller.text;
-        _overlayEntry = _createOverlayEntry();
-        Overlay.of(context)!.insert(_overlayEntry);
-      } else {
-        _overlayEntry.remove();
-      }
-    });
+    _focusNode = auxfield.focusNode ?? FocusNode();
+    _controller = auxfield.controller ?? TextEditingController();
+    _values.value = widget.values;
 
     _controller.addListener(() {
-      if (_controller.text == "") {
-        FocusScope.of(context).requestFocus(_focusNode);
-        setState(() {
-          _search = "";
-        });
-      }
+      debounce(() {
+        var aux = widget.values.map(
+          (element) => element.copyWith(
+            onTap: () {
+              if (widget.onSelected != null) {
+                widget.onSelected!(element.value);
+              }
+              FocusScope.of(context).requestFocus(FocusNode());
+              setState(() {
+                _controller.text = element.search;
+              });
+              log("onTap :: item");
+              element.onTap?.call();
+            },
+          ),
+        );
+
+        if (_controller.text.isNotEmpty) {
+          _values.value = aux
+              .where((e) => e.search
+                  .toLowerCase()
+                  .contains(_controller.text.toLowerCase()))
+              .toList();
+        } else {
+          _values.value = aux.toList();
+        }
+      });
     });
+
+    _settingsList = auxlist;
+
+    _settingsTextField = auxfield.copyWith(
+      focusNode: _focusNode,
+      controller: _controller,
+    );
   }
 
   @override
   void dispose() {
     _focusNode.dispose();
-    _overlayEntry.dispose();
+    _controller.dispose();
+    _values.dispose();
 
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _layerLink,
-      child: _settingsTextField,
+    return Search(
+      values: _values,
+      settingsTextField: _settingsTextField,
+      settingsList: _settingsList,
     );
   }
 
-  void init() {
+  /// metodo que vita que se sobre carge para evitar que se ejecute varias veces
+  void debounce(void Function() callback) {
+    if (_debounce?.isActive ?? false) {
+      _debounce!.cancel();
+    }
+    _debounce = Timer(const Duration(milliseconds: 500), callback);
+  }
+}
+
+/// Widget para combertir el [Search] en un Field widget
+class SelectFieldFuture<T> extends StatefulWidget {
+  final Future<List<SelectItem<T>>> Function(String search) values;
+  final SelectFieldSettings? settingsTextField;
+  final SelectListSettings? settingsList;
+  final void Function(T)? onSelected;
+
+  /// time on miliseconds to wait before search
+  final int debounce;
+  SelectFieldFuture({
+    Key? key,
+    required this.values,
+    this.settingsTextField,
+    this.settingsList,
+    this.onSelected,
+    this.debounce = 500,
+  }) : super(key: key);
+
+  @override
+  State<SelectFieldFuture> createState() => _SelectFieldFutureState();
+}
+
+class _SelectFieldFutureState extends State<SelectFieldFuture> {
+  late FocusNode _focusNode;
+  late TextEditingController _controller;
+
+  late SelectFieldSettings _settingsTextField;
+  late SelectListSettings _settingsList;
+  final ValueNotifier<List<SelectItem<dynamic>>> _values =
+      ValueNotifier<List<SelectItem<dynamic>>>([]);
+
+  Timer? _debounce;
+
+  @override
+  void initState() {
+    super.initState();
     var auxfield = widget.settingsTextField ?? SelectFieldSettings();
     var auxlist = widget.settingsList ?? SelectListSettings();
 
     _focusNode = auxfield.focusNode ?? FocusNode();
     _controller = auxfield.controller ?? TextEditingController();
 
-    setState(() {
-      _settingsList = auxlist;
+    _controller.addListener(() {
+      debounce(() {
+        widget.values(_controller.text).then((v) {
+          var aux = v.map(
+            (element) => element.copyWith(
+              onTap: () {
+                if (widget.onSelected != null) {
+                  widget.onSelected!(element.value);
+                }
+                FocusScope.of(context).requestFocus(FocusNode());
+                setState(() {
+                  _controller.text = element.search;
+                });
+                log("onTap :: item");
+                element.onTap?.call();
+              },
+            ),
+          );
 
-      _settingsTextField = auxfield.copyWith(
-        focusNode: _focusNode,
-        controller: _controller,
-        onChanged: (String value) {
-          setState(() {
-            _search = value;
-          });
-          auxfield.onChanged?.call(value);
-        },
-      );
+          _values.value = aux.toList();
+        });
+      });
     });
+
+    _settingsList = auxlist;
+
+    _settingsTextField = auxfield.copyWith(
+      focusNode: _focusNode,
+      controller: _controller,
+    );
   }
 
-  OverlayEntry _createOverlayEntry() {
-    RenderBox renderBox = context.findRenderObject() as RenderBox;
-    var size = renderBox.size;
-    var offset = renderBox.localToGlobal(Offset.zero);
+  @override
+  Widget build(BuildContext context) {
+    return Search(
+      values: _values,
+      settingsTextField: _settingsTextField,
+      settingsList: _settingsList,
+    );
+  }
 
-    return OverlayEntry(
-        builder: (context) => Positioned(
-              left: offset.dx,
-              top: offset.dy + size.height + 5.0,
-              width: size.width,
-              child: CompositedTransformFollower(
-                link: _layerLink,
-                showWhenUnlinked: false,
-                offset: Offset(0.0, size.height + 5.0),
-                child: Material(
-                    elevation: _settingsList.elevation,
-                    child: _settingsList.copyWith(
-                      child: ListView(
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        children: widget.values
-                            .where((element) => element.search
-                                .toLowerCase()
-                                .contains(_search.toLowerCase()))
-                            .map(
-                          (element) {
-                            var aux = element.copyWith(onTap: () {
-                              if (widget.onSelected != null) {
-                                widget.onSelected!(element.value);
-                              }
-                              FocusScope.of(context).requestFocus(FocusNode());
-                              setState(() {
-                                _controller.text = element.search;
-                              });
-                              log("InkWell :: onTap");
-                              element.onTap?.call();
-                            });
-
-                            return aux;
-                          },
-                        ).toList(),
-                      ),
-                    )),
-              ),
-            ));
+  /// metodo que vita que se sobre carge para evitar que se ejecute varias veces
+  void debounce(void Function() callback) {
+    if (_debounce?.isActive ?? false) {
+      _debounce!.cancel();
+    }
+    _debounce = Timer(const Duration(milliseconds: 500), callback);
   }
 }
