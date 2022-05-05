@@ -978,12 +978,16 @@ class SelectField<T> extends StatefulWidget {
   final SelectFieldSettings? settingsTextField;
   final SelectListSettings? settingsList;
   final void Function(T)? onSelected;
+
+  /// time on miliseconds to wait before search
+  final int debounce;
   const SelectField({
     Key? key,
     required this.values,
     this.settingsTextField,
     this.settingsList,
     this.onSelected,
+    this.debounce = 500,
   }) : super(key: key);
 
   @override
@@ -1072,7 +1076,7 @@ class _SelectFieldState extends State<SelectField> {
     if (_debounce?.isActive ?? false) {
       _debounce!.cancel();
     }
-    _debounce = Timer(const Duration(milliseconds: 500), callback);
+    _debounce = Timer(Duration(milliseconds: widget.debounce), callback);
   }
 }
 
