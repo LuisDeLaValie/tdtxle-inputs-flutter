@@ -1,13 +1,10 @@
-# TDTxLE_Inputs_Flutter
+# tdtxle_inputs_flutter
 
-TDTxLE_Inputs_Flutter is a bundle of custom input widgets used on a daily basis
+**tdtxle_inputs_flutter** es un paquete de widgets personalizados de imputs
 
 <img src="media/img.gif" height="400"><img src="media/chip1.gif" height="400"><img src="media/chip2.gif" height="400"><img src="media/select.gif" height="400">
 
-## Use
----
-
-Dependency with the specific **branch**:
+Implementacion con la  **branch**:
 ```yaml
 dependencies:
   flutter:
@@ -20,7 +17,7 @@ dependencies:
 
 ```
 
-Dependency with the specific **commit**:
+Implementacion con el **commit**:
 ```yaml
 dependencies:
   flutter:
@@ -33,54 +30,55 @@ dependencies:
 ```
 
 
+## Uso
+---
+
 
 <details>
   <summary>Input IMG</summary>
-  
+
+  ### *ImagenPerfil*
+  Este Widgets mustra solo una imagen, puede recibir tanto un archivo de imagen como una url. 
+
+  ```dart
+    ImagenPerfil(
+      required imgPath: String,
+      elevation: double?,
+      borderRadius = BorderRadius.zero,
+      color: Color?,
+      child: Widget?,
+      height: double?,
+      width: double?,
+    )
+  ```
+
+    ### *SubuirFotos*
+  La clase *SubuirFotos* que te permite elegir un archivo de imagen del dispositivo. 
+
+  - `getImageLibrary`:
+    Abre directamente la galería para poder elegir una imagen.
+  - `cameraImage`:
+    Abra directamente la cámara para tomar la foto.
+  - `selectCamera`:
+    Abre un modal para que el usuario puede elegir entre abrir la galeria o la camara.
+    
+  ### *ImageFormField*
+   El Widget *ImageFormField* es un FormField que te permite seleccionar un archivo de imagen del telefono para poder mostrar.
+  ```dart
+    ImageFormField(
+      initialValue: String,
+      onSaved: void Function(String? newValue),
+      validator: String? Function(String? value),
+      onChanged: Function(String? value),
+      child: Widget,
+      width: double,
+      height: double,
+      typePicker: TypePicker,
+      elevation: double,
+      borderRadius: BorderRadius,
+    )
+  ```
   <img src="media/img.gif" height="400">
-
-   ### *ImagenPerfil*
-  This Widget shows only an image, the *imgPath* field accepts either a url or a file address
-
-```dart
-  ImagenPerfil(
-    required imgPath: String,
-    elevation: double?,
-    borderRadius = BorderRadius.zero,
-    color: Color?,
-    child: Widget?,
-    height: double?,
-    width: double?,
-  )
-```
-
-### *SubuirFotos*
-The *SubuirFotos* class has the functions to choose how to upload the images.
-
-- `getImageLibrary`:
-  Directly open the phone gallery to be able to choose an image
-- `cameraImage`:
-  Directly open the phone camera to take the picture
-- `selectCamera`:
-  Open a modal so that the user can choose if the image is taken by the camera or from the gallery
-  
-  
-### *ImageFormField*
-The Widget *ImageFormField* is a FormField, to be able to validate from the form when the user adds an image.
-```dart
-ImageFormField(
-  initialValue: String,
-  onSaved: void Function(String? newValue),
-  validator: String? Function(String? value),
-  onChanged: Function(String? value),
-  child: Widget,
-  width: double,
-  height: double,
-  typePicker: TypePicker,
-  elevation: double,
-  borderRadius: BorderRadius,
-)
-```
 
 </details>
 <details>
@@ -88,9 +86,7 @@ ImageFormField(
   
 
   ### *ChipField* / *ChipFormField*
-  ChipField/ChipFormField is a text type widget that allows you to separate things with chips.
-
-  <img src="media/chip1.gif" height="400">
+  *ChipField* / *ChipFormField* es un campo de texto que te permite separar palabras mediante chips.
 
 
 ```dart
@@ -118,20 +114,22 @@ ChipFormField(
     initialValue:String? Function(List<ChipItem<T>?>?)?,
   )
 ```
-### *ChipDialog*
-ChipDialog displays a Dialog to be able to choose between already established options.
+<img src="media/chip1.gif" height="400">
 
-  <img src="media/chip2.gif" height="400">
+### *ChipDialog*
+*ChipDialog* muestra un Diálogo para poder elegir entre opciones ya establecidas.
 
 ```dart
  ChipDialog(
     decoration: InputDecoration?,
-    data: List<ChipItem>, // required
-    chipBuilder: Chip Function(ChipItem<T>?), // required
+    required data: List<ChipItem>,
+    required chipBuilder: Chip Function(ChipItem<T>?),
     selectChipBuilder: Chip Function(ChipItem<T>?)?,
-    onChanged: void Function(List<T>), // required
+    required onChanged: void Function(List<T>),
   )
 ```
+  <img src="media/chip2.gif" height="400">
+
   
 </details>
 
@@ -139,9 +137,41 @@ ChipDialog displays a Dialog to be able to choose between already established op
   <summary>Imput Select</summary>
 
   ### *SelectField*
-  The SelectField Widget is the same as a TextField with the addition of a popup list that will be updated as the TextField is written.
+  El widget ***SelectField*** / ***SelectFieldFuture*** es lo mismo que un TextField con la adición de una lista emergente que se actualizará a medida que se escriba en el TextField.
 
+  ### *SelectField*
+  ```dart
+    SelectField(
+      required values: List<SelectItem<String>>,
+      settingsTextField: SelectFieldSettings?,
+      settingsList: SelectListSettings?,
+      onSelected: void Function(String)?,
+      debounce: int, // default 500 
+    )
+  ```
+  ### *SelectFieldFuture*
+  ***SelectFieldFuture*** es igual que ***SelectField*** solo que en ves de recibir una lista de *SelectItem* recibe una funcion que retorna una lista de *SelectItem*.
+  ```dart
+    SelectFieldFuture(
+      required values: Future<List<SelectItem<Object?>>> Function(String),
+      settingsTextField: SelectFieldSettings?,
+      settingsList: SelectListSettings?,
+      onSelected: void Function(Object?)?,
+      debounce: int, // default 500 
+    )
+  ```
   <img src="media/select.gif" height="400">
 
+  ### *SelectItem*
+  ```dart
+    SelectItem(
+      required value: String,
+      required search: String,
+      required title: Widget,
+      subtitle: Widget?,
+      trailing: Widget?,
+      leading: Widget?,
+    )
+  ```
 
 </details>

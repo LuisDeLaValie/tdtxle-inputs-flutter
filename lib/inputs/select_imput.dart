@@ -776,7 +776,6 @@ class _SelectFieldState extends State<SelectField> {
               setState(() {
                 _controller.text = element.search;
               });
-              log("onTap :: item");
               element.onTap?.call();
             },
           ),
@@ -884,7 +883,6 @@ class _SelectFieldFutureState extends State<SelectFieldFuture> {
                 setState(() {
                   _controller.text = element.search;
                 });
-                log("onTap :: item");
                 element.onTap?.call();
               },
             ),
