@@ -6,21 +6,21 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImagenPerfil extends StatelessWidget {
-  final double elevation;
+  final String imgPath;
+  final double? elevation;
   final BorderRadius? borderRadius;
   final Color? color;
   final Widget? child;
-  final String? imgPath;
   final double? height;
   final double? width;
 
   const ImagenPerfil({
     Key? key,
-    required this.elevation,
+    required this.imgPath,
+    this.elevation,
     this.borderRadius = BorderRadius.zero,
     this.color,
     this.child,
-    this.imgPath,
     this.height,
     this.width,
   }) : super(key: key);
@@ -32,17 +32,15 @@ class ImagenPerfil extends StatelessWidget {
 
     if (color != null) elcolor = color;
 
-    if (imgPath != null) {
-      var isweb = imgPath!.contains("http");
-      if (isweb) {
-        imgen = _imagenUrl(imgPath!);
-      } else {
-        imgen = _imagenFile(File(imgPath!));
-      }
+    var isweb = imgPath.contains("http");
+    if (isweb) {
+      imgen = _imagenUrl(imgPath);
+    } else {
+      imgen = _imagenFile(File(imgPath));
     }
 
     return Material(
-      elevation: elevation,
+      elevation: elevation ?? 0.0,
       borderRadius: borderRadius,
       color: elcolor,
       child: ClipRRect(
@@ -68,7 +66,13 @@ class ImagenPerfil extends StatelessWidget {
       width: width,
       errorBuilder: (_, c, s) => _error(),
       loadingBuilder: (_, w, s) {
-        return s != null ? const Center(child: CircularProgressIndicator()) : w;
+        return s != null
+            ? SizedBox(
+                height: height,
+                width: width,
+                child: const Center(child: CircularProgressIndicator()),
+              )
+            : w;
       },
     );
   }
@@ -84,7 +88,7 @@ class ImagenPerfil extends StatelessWidget {
   }
 }
 
-enum TypePicker { Camara, Galeria, Seleccionar }
+enum TypePicker { camara, galeria, seleccionar }
 
 class ImageFormField extends FormField<String> {
   @override
@@ -114,7 +118,7 @@ class ImageFormField extends FormField<String> {
     this.child,
     this.width,
     this.height,
-    this.typePicker = TypePicker.Seleccionar,
+    this.typePicker = TypePicker.seleccionar,
     this.elevation = 0,
     this.borderRadius = BorderRadius.zero,
   }) : super(
@@ -130,13 +134,13 @@ class ImageFormField extends FormField<String> {
                   String? path;
 
                   switch (typePicker!) {
-                    case TypePicker.Camara:
+                    case TypePicker.camara:
                       path = (await SubuirFotos.cameraImage())?.path;
                       break;
-                    case TypePicker.Galeria:
+                    case TypePicker.galeria:
                       path = (await SubuirFotos.getImageLibrary())?.path;
                       break;
-                    case TypePicker.Seleccionar:
+                    case TypePicker.seleccionar:
                       path = (await SubuirFotos.selectCamera(
                               contex: state.context))
                           ?.path;
@@ -156,12 +160,12 @@ class ImageFormField extends FormField<String> {
                   child: Column(
                     children: <Widget>[
                       ImagenPerfil(
+                        imgPath: state.value ?? "",
                         elevation: elevation,
                         color: state.hasError
                             ? Colors.red[900]
                             : Colors.white.withOpacity(0.001),
                         borderRadius: borderRadius,
-                        imgPath: state.value,
                         width: width,
                         height: height,
                         child: child,

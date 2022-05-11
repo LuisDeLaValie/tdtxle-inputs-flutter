@@ -322,7 +322,7 @@ class _ChipDialog extends StatefulWidget {
   final Chip Function(ChipItem? theme) chipBuilder;
   final Chip Function(ChipItem? vlue) selectChipBuilder;
 
-  _ChipDialog({
+  const _ChipDialog({
     Key? key,
     required this.data,
     required this.chipBuilder,

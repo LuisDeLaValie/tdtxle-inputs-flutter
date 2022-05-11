@@ -44,14 +44,14 @@ dependencies:
 
 ```dart
   ImagenPerfil(
-      elevation: double , // required
-      borderRadius: BorderRadius.zero,,
-      color: Color:
-      child: Widget,
-      imgPath: String,
-      height: double,
-      width: double,
-    )
+    required imgPath: String,
+    elevation: double?,
+    borderRadius = BorderRadius.zero,
+    color: Color?,
+    child: Widget?,
+    height: double?,
+    width: double?,
+  )
 ```
 
 ### *SubuirFotos*
