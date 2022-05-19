@@ -16,7 +16,7 @@ class ExampleSelectField extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SelectField(
+              SelectField<String>(
                 settingsTextField: const SelectFieldSettings(
                   decoration: InputDecoration(
                     labelText: 'Select Field',
@@ -34,11 +34,11 @@ class ExampleSelectField extends StatelessWidget {
                   SelectItem(value: '8', search: 'Eight', title: Text('Eight')),
                 ],
                 onSelected: (val) {
-                  print("el valor es $val");
+                  print("SelectField el valor es $val");
                 },
               ),
               const SizedBox(height: 50),
-              SelectFieldFuture(
+              SelectFieldFuture<String>(
                 settingsTextField: const SelectFieldSettings(
                   decoration: InputDecoration(
                     labelText: 'Select Field Future',
@@ -56,7 +56,7 @@ class ExampleSelectField extends StatelessWidget {
                     "Seven",
                     "Eight",
                   ];
-                  List<SelectItem> list = [];
+                  List<SelectItem<String>> list = [];
                   for (var i = 0; i < items.length; i++) {
                     if (items[i].toLowerCase().contains(val.toLowerCase())) {
                       list.add(SelectItem(
@@ -69,7 +69,7 @@ class ExampleSelectField extends StatelessWidget {
                   return list;
                 },
                 onSelected: (val) {
-                  print("el valor es $val");
+                  print("SelectFieldFuture el valor es $val");
                 },
               ),
             ],

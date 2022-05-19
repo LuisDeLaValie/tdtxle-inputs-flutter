@@ -740,10 +740,10 @@ class SelectField<T> extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<SelectField> createState() => _SelectFieldState();
+  State<SelectField<T>> createState() => _SelectFieldState<T>();
 }
 
-class _SelectFieldState extends State<SelectField> {
+class _SelectFieldState<T> extends State<SelectField<T>> {
   late FocusNode _focusNode;
   late TextEditingController _controller;
 
@@ -847,10 +847,10 @@ class SelectFieldFuture<T> extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<SelectFieldFuture> createState() => _SelectFieldFutureState();
+  State<SelectFieldFuture<T>> createState() => _SelectFieldFutureState<T>();
 }
 
-class _SelectFieldFutureState extends State<SelectFieldFuture> {
+class _SelectFieldFutureState<T> extends State<SelectFieldFuture<T>> {
   late FocusNode _focusNode;
   late TextEditingController _controller;
 
