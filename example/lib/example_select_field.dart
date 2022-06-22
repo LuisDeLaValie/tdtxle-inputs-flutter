@@ -73,6 +73,7 @@ class ExampleSelectField extends StatelessWidget {
                   return list;
                 },
                 onSelected: (val) {},
+                showCloseButton: true,
               ),
             ],
           ),

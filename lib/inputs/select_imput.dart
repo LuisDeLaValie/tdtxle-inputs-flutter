@@ -678,7 +678,9 @@ class _SearchState<T> extends State<Search<T>> {
         _overlayEntry = createOverlayEntry();
         Overlay.of(context)!.insert(_overlayEntry);
       } else {
-        _overlayEntry.remove();
+        if (_overlayEntry.mounted) {
+          _overlayEntry.remove();
+        }
       }
     });
 
