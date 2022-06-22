@@ -32,11 +32,13 @@ class ImagenPerfil extends StatelessWidget {
 
     if (color != null) elcolor = color;
 
-    var isweb = imgPath.contains("http");
-    if (isweb) {
-      imgen = _imagenUrl(imgPath);
-    } else {
-      imgen = _imagenFile(File(imgPath));
+    if (imgPath.isNotEmpty) {
+      var isweb = imgPath.contains("http");
+      if (isweb) {
+        imgen = _imagenUrl(imgPath);
+      } else {
+        imgen = _imagenFile(File(imgPath));
+      }
     }
 
     return Material(

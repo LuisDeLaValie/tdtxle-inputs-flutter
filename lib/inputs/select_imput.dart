@@ -1,7 +1,6 @@
 // ignore_for_file: overridden_fields
 
 import 'dart:async';
-import 'dart:developer';
 import 'dart:ui' as ui show BoxHeightStyle, BoxWidthStyle;
 
 import 'package:flutter/gestures.dart';
@@ -639,12 +638,18 @@ class Search<T> extends StatefulWidget {
   final ValueNotifier<List<SelectItem<T>>> values;
   final SelectFieldSettings? settingsTextField;
   final SelectListSettings? settingsList;
+  final bool? showCloseButton;
+  final void Function()? onCloseButton;
+  final Widget? iconCloseButton;
 
   const Search({
     Key? key,
     required this.values,
     this.settingsTextField,
     this.settingsList,
+    this.showCloseButton,
+    this.onCloseButton,
+    this.iconCloseButton,
   }) : super(key: key);
 
   @override
@@ -659,6 +664,7 @@ class _SearchState<T> extends State<Search<T>> {
   late SelectListSettings _settingsList;
 
   late FocusNode _focusNode;
+
   @override
   void initState() {
     super.initState();
@@ -676,7 +682,15 @@ class _SearchState<T> extends State<Search<T>> {
       }
     });
 
-    _settingsTextField = _settingsTextField.copyWith(focusNode: _focusNode);
+    _settingsTextField = _settingsTextField.copyWith(
+      focusNode: _focusNode,
+      onTap: () {
+        if (_focusNode.hasFocus && !_overlayEntry.mounted) {
+          _overlayEntry = createOverlayEntry();
+          Overlay.of(context)!.insert(_overlayEntry);
+        }
+      },
+    );
   }
 
   @override
@@ -710,7 +724,26 @@ class _SearchState<T> extends State<Search<T>> {
                     return ListView(
                       padding: EdgeInsets.zero,
                       shrinkWrap: true,
-                      children: v,
+                      children: [
+                        const SizedBox(height: 1),
+                        if (widget.showCloseButton ?? false)
+                          Row(
+                            children: [
+                              const Spacer(),
+                              InkWell(
+                                onTap: () {
+                                  _overlayEntry.remove();
+                                  if (widget.onCloseButton != null) {
+                                    widget.onCloseButton!.call();
+                                  }
+                                },
+                                child: widget.iconCloseButton ??
+                                    const Icon(Icons.close),
+                              )
+                            ],
+                          ),
+                        ...v,
+                      ],
                     );
                   }),
             ),
@@ -730,6 +763,11 @@ class SelectField<T> extends StatefulWidget {
 
   /// time on miliseconds to wait before search
   final int debounce;
+
+  final bool? showCloseButton;
+  final void Function()? onCloseButton;
+  final Widget? iconCloseButton;
+
   const SelectField({
     Key? key,
     required this.values,
@@ -737,6 +775,9 @@ class SelectField<T> extends StatefulWidget {
     this.settingsList,
     this.onSelected,
     this.debounce = 500,
+    this.showCloseButton,
+    this.onCloseButton,
+    this.iconCloseButton,
   }) : super(key: key);
 
   @override
@@ -816,6 +857,9 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
       values: _values,
       settingsTextField: _settingsTextField,
       settingsList: _settingsList,
+      showCloseButton: widget.showCloseButton,
+      onCloseButton: widget.onCloseButton,
+      iconCloseButton: widget.iconCloseButton,
     );
   }
 
@@ -837,6 +881,11 @@ class SelectFieldFuture<T> extends StatefulWidget {
 
   /// time on miliseconds to wait before search
   final int debounce;
+
+  final bool? showCloseButton;
+  final void Function()? onCloseButton;
+  final Widget? iconCloseButton;
+
   const SelectFieldFuture({
     Key? key,
     required this.values,
@@ -844,6 +893,9 @@ class SelectFieldFuture<T> extends StatefulWidget {
     this.settingsList,
     this.onSelected,
     this.debounce = 500,
+    this.showCloseButton,
+    this.onCloseButton,
+    this.iconCloseButton,
   }) : super(key: key);
 
   @override
@@ -907,6 +959,9 @@ class _SelectFieldFutureState<T> extends State<SelectFieldFuture<T>> {
       values: _values,
       settingsTextField: _settingsTextField,
       settingsList: _settingsList,
+      showCloseButton: widget.showCloseButton,
+      onCloseButton: widget.onCloseButton,
+      iconCloseButton: widget.iconCloseButton,
     );
   }
 

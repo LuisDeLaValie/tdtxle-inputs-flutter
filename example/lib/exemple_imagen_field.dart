@@ -30,7 +30,7 @@ class ExempleImagenField extends StatelessWidget {
               width: 150,
               height: 150,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             const Text("Seleccione una imagen"),
           ],
         ),

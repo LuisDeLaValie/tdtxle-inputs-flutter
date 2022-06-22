@@ -12,10 +12,12 @@ class ExampleSelectField extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Center(
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const SizedBox(height: 150),
               SelectField<String>(
                 settingsTextField: const SelectFieldSettings(
                   decoration: InputDecoration(
@@ -33,13 +35,15 @@ class ExampleSelectField extends StatelessWidget {
                   SelectItem(value: '7', search: 'Seven', title: Text('Seven')),
                   SelectItem(value: '8', search: 'Eight', title: Text('Eight')),
                 ],
-                onSelected: (val) {
-                  print("SelectField el valor es $val");
-                },
+                onSelected: (val) {},
+                showCloseButton: true,
               ),
               const SizedBox(height: 50),
               SelectFieldFuture<String>(
                 settingsTextField: const SelectFieldSettings(
+                  keyboardType: TextInputType.name,
+                  textCapitalization: TextCapitalization.words,
+                  textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     labelText: 'Select Field Future',
                     border: OutlineInputBorder(),
@@ -68,9 +72,7 @@ class ExampleSelectField extends StatelessWidget {
                   }
                   return list;
                 },
-                onSelected: (val) {
-                  print("SelectFieldFuture el valor es $val");
-                },
+                onSelected: (val) {},
               ),
             ],
           ),

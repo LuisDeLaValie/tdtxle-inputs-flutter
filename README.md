@@ -147,6 +147,9 @@ ChipFormField(
       settingsList: SelectListSettings?,
       onSelected: void Function(String)?,
       debounce: int, // default 500 
+      showCloseButton: bool?,
+      onCloseButton: void Function()?,
+      iconCloseButton: Widget?,    
     )
   ```
   ### *SelectFieldFuture*
@@ -158,6 +161,9 @@ ChipFormField(
       settingsList: SelectListSettings?,
       onSelected: void Function(Object?)?,
       debounce: int, // default 500 
+      showCloseButton: bool?,
+      onCloseButton: void Function()?,
+      iconCloseButton: Widget?,
     )
   ```
   <img src="media/select.gif" height="400">
