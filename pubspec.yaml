@@ -1,7 +1,7 @@
 name: tdtxle_inputs_flutter
 description: A new Flutter package project.
-version: 0.0.1
-homepage: null
+version: 1.2.3
+homepage: "null"
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -10,10 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  image_picker: ^0.8.4+4
+  image_picker: ^0.8.5+3
 
 dev_dependencies:
-  flutter_lints: ^1.0.0
+  flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter
 
