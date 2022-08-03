@@ -41,6 +41,8 @@ class _SelectFieldFutureState<T> extends State<SelectFieldFuture<T>> {
 
   Timer? _debounce;
 
+  bool isOpen = false;
+
   @override
   void initState() {
     super.initState();
@@ -51,26 +53,28 @@ class _SelectFieldFutureState<T> extends State<SelectFieldFuture<T>> {
     _controller = auxfield.controller ?? TextEditingController();
 
     _controller.addListener(() {
-      debounce(() {
-        widget.values(_controller.text).then((v) {
-          var aux = v.map(
-            (element) => element.copyWith(
-              onTap: () {
-                if (widget.onSelected != null) {
-                  widget.onSelected!(element.value);
-                }
-                FocusScope.of(context).requestFocus(FocusNode());
-                setState(() {
-                  _controller.text = element.search;
-                });
-                element.onTap?.call();
-              },
-            ),
-          );
+      if (isOpen) {
+        debounce(() {
+          widget.values(_controller.text).then((v) {
+            var aux = v.map(
+              (element) => element.copyWith(
+                onTap: () {
+                  if (widget.onSelected != null) {
+                    widget.onSelected!(element.value);
+                  }
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  setState(() {
+                    _controller.text = element.search;
+                  });
+                  element.onTap?.call();
+                },
+              ),
+            );
 
-          _values.value = aux.toList();
+            _values.value = aux.toList();
+          });
         });
-      });
+      }
     });
 
     _settingsList = auxlist;
@@ -90,6 +94,10 @@ class _SelectFieldFutureState<T> extends State<SelectFieldFuture<T>> {
       showCloseButton: widget.showCloseButton,
       onCloseButton: widget.onCloseButton,
       iconCloseButton: widget.iconCloseButton,
+      isOpen: (val) {
+        setState(() => isOpen = val);
+        _controller.text = _controller.text;
+      },
     );
   }
 

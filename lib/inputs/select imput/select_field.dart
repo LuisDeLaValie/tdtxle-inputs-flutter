@@ -41,6 +41,7 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
 
   Timer? _debounce;
 
+  bool isOpen = false;
   @override
   void initState() {
     super.initState();
@@ -52,32 +53,34 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
     _values.value = widget.values;
 
     _controller.addListener(() {
-      debounce(() {
-        var aux = widget.values.map(
-          (element) => element.copyWith(
-            onTap: () {
-              if (widget.onSelected != null) {
-                widget.onSelected!(element.value);
-              }
-              FocusScope.of(context).requestFocus(FocusNode());
-              setState(() {
-                _controller.text = element.search;
-              });
-              element.onTap?.call();
-            },
-          ),
-        );
+      if (isOpen) {
+        debounce(() {
+          var aux = widget.values.map(
+            (element) => element.copyWith(
+              onTap: () {
+                if (widget.onSelected != null) {
+                  widget.onSelected!(element.value);
+                }
+                FocusScope.of(context).requestFocus(FocusNode());
+                setState(() {
+                  _controller.text = element.search;
+                });
+                element.onTap?.call();
+              },
+            ),
+          );
 
-        if (_controller.text.isNotEmpty) {
-          _values.value = aux
-              .where((e) => e.search
-                  .toLowerCase()
-                  .contains(_controller.text.toLowerCase()))
-              .toList();
-        } else {
-          _values.value = aux.toList();
-        }
-      });
+          if (_controller.text.isNotEmpty) {
+            _values.value = aux
+                .where((e) => e.search
+                    .toLowerCase()
+                    .contains(_controller.text.toLowerCase()))
+                .toList();
+          } else {
+            _values.value = aux.toList();
+          }
+        });
+      }
     });
 
     _settingsList = auxlist;
@@ -106,6 +109,10 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
       showCloseButton: widget.showCloseButton,
       onCloseButton: widget.onCloseButton,
       iconCloseButton: widget.iconCloseButton,
+      isOpen: (val) {
+        setState(() => isOpen = val);
+        _controller.text = _controller.text;
+      },
     );
   }
 

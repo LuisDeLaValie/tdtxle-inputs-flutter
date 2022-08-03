@@ -7,6 +7,7 @@ class Search<T> extends StatefulWidget {
   final SelectListSettings? settingsList;
   final bool? showCloseButton;
   final void Function()? onCloseButton;
+  final void Function(bool stats)? isOpen;
   final Widget? iconCloseButton;
 
   const Search({
@@ -17,6 +18,7 @@ class Search<T> extends StatefulWidget {
     this.showCloseButton,
     this.onCloseButton,
     this.iconCloseButton,
+    this.isOpen,
   }) : super(key: key);
 
   @override
@@ -44,9 +46,11 @@ class _SearchState<T> extends State<Search<T>> {
       if (_focusNode.hasFocus) {
         _overlayEntry = createOverlayEntry();
         Overlay.of(context)!.insert(_overlayEntry);
+        widget.isOpen?.call(true);
       } else {
         if (_overlayEntry.mounted) {
           _overlayEntry.remove();
+          widget.isOpen?.call(false);
         }
       }
     });
@@ -57,6 +61,7 @@ class _SearchState<T> extends State<Search<T>> {
         if (_focusNode.hasFocus && !_overlayEntry.mounted) {
           _overlayEntry = createOverlayEntry();
           Overlay.of(context)!.insert(_overlayEntry);
+          widget.isOpen?.call(true);
         }
       },
     );
@@ -102,6 +107,7 @@ class _SearchState<T> extends State<Search<T>> {
                               InkWell(
                                 onTap: () {
                                   _overlayEntry.remove();
+                                  widget.isOpen?.call(false);
                                   if (widget.onCloseButton != null) {
                                     widget.onCloseButton!.call();
                                   }

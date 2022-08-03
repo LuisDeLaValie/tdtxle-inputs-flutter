@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:tdtxle_inputs_flutter/inputs_tdtxle.dart';
 
 class ExampleSelectField extends StatelessWidget {
-  const ExampleSelectField({Key? key}) : super(key: key);
+  ExampleSelectField({Key? key}) : super(key: key);
 
+  TextEditingController controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,16 +41,18 @@ class ExampleSelectField extends StatelessWidget {
               ),
               const SizedBox(height: 50),
               SelectFieldFuture<String>(
-                settingsTextField: const SelectFieldSettings(
+                settingsTextField: SelectFieldSettings(
+                  controller: controller,
                   keyboardType: TextInputType.name,
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Select Field Future',
                     border: OutlineInputBorder(),
                   ),
                 ),
                 values: (val) async {
+                  print("jakas wassa mamala");
                   final List<String> items = [
                     "One",
                     "Two",
@@ -78,6 +81,11 @@ class ExampleSelectField extends StatelessWidget {
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          controller.text = "t";
+        },
       ),
     );
   }

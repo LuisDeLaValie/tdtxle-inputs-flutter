@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 part 'configuraciones.dart';
 part 'search.dart';
 part 'select_item.dart';
-part 'selectField.dart';
+part 'select_field.dart';
 part 'select_field_furure.dart';
 
 
