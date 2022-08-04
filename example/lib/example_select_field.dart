@@ -51,8 +51,8 @@ class ExampleSelectField extends StatelessWidget {
                     border: OutlineInputBorder(),
                   ),
                 ),
+                debounce: 2500,
                 values: (val) async {
-                  print("jakas wassa mamala");
                   final List<String> items = [
                     "One",
                     "Two",
@@ -78,6 +78,7 @@ class ExampleSelectField extends StatelessWidget {
                 onSelected: (val) {},
                 showCloseButton: true,
               ),
+              const SizedBox(height: 300),
             ],
           ),
         ),

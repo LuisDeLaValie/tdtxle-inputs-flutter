@@ -106,6 +106,6 @@ class _SelectFieldFutureState<T> extends State<SelectFieldFuture<T>> {
     if (_debounce?.isActive ?? false) {
       _debounce!.cancel();
     }
-    _debounce = Timer(const Duration(milliseconds: 500), callback);
+    _debounce = Timer(Duration(milliseconds: widget.debounce), callback);
   }
 }
