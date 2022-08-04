@@ -12,21 +12,25 @@ class SelectItem<T> extends ListTile {
   final Widget? trailing;
   @override
   final Widget? leading;
+  @override
+  final bool enabled;
 
-  const SelectItem({
-    Key? key,
-    required this.value,
-    required this.search,
-    required this.title,
-    this.subtitle,
-    this.trailing,
-    this.leading,
-  }) : super(
+  const SelectItem(
+      {Key? key,
+      required this.value,
+      required this.search,
+      required this.title,
+      this.subtitle,
+      this.trailing,
+      this.leading,
+      this.enabled = true})
+      : super(
           key: key,
           title: title,
           subtitle: subtitle,
           leading: leading,
           trailing: trailing,
+          enabled: enabled,
         );
   const SelectItem._({
     Key? key,
@@ -36,6 +40,7 @@ class SelectItem<T> extends ListTile {
     this.subtitle,
     this.trailing,
     this.leading,
+    this.enabled = true,
     Function()? onTap,
   }) : super(
           key: key,
@@ -44,6 +49,7 @@ class SelectItem<T> extends ListTile {
           leading: leading,
           trailing: trailing,
           onTap: onTap,
+          enabled: enabled,
         );
 
   SelectItem<T> copyWith({

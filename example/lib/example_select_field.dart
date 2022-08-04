@@ -14,7 +14,7 @@ class ExampleSelectField extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -51,7 +51,7 @@ class ExampleSelectField extends StatelessWidget {
                     border: OutlineInputBorder(),
                   ),
                 ),
-                debounce: 2500,
+                debounce: 1000,
                 values: (val) async {
                   final List<String> items = [
                     "One",
@@ -73,8 +73,61 @@ class ExampleSelectField extends StatelessWidget {
                       ));
                     }
                   }
-                  return list;
+                  return Future.delayed(Duration(seconds: 6), () => list);
                 },
+                loading: List.generate(
+                  3,
+                  (index) => SelectItem(
+                    enabled: false,
+                    value: "",
+                    search: "search",
+                    leading: Container(
+                      width: 45,
+                      height: 45,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomLeft,
+                          end: Alignment.topRight,
+                          colors: [
+                            Colors.grey,
+                            Colors.grey.shade300,
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                    ),
+                    title: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                         begin: Alignment.bottomLeft,
+                          end: Alignment.topRight,
+                          colors: [
+                            Colors.grey.shade300,
+                            Colors.grey,
+                          ],
+                        ),
+                      ),
+                      width: 100,
+                      height: 5,
+                      margin: EdgeInsets.only(right: 100),
+                    ),
+                    subtitle: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                         begin: Alignment.bottomLeft,
+                          end: Alignment.topRight,
+                          colors: [
+                            Colors.grey.shade300,
+                            Colors.grey,
+                          ],
+                        ),
+                      ),
+                      width: 25,
+                      height: 3,
+                      margin: EdgeInsets.only(right: 150),
+                    ),
+                  ),
+                ),
                 onSelected: (val) {},
                 showCloseButton: true,
               ),

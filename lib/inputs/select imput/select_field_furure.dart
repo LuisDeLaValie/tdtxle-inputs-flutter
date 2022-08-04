@@ -3,6 +3,7 @@ part of 'select_imput.dart';
 /// Widget para combertir el [Search] en un Field widget
 class SelectFieldFuture<T> extends StatefulWidget {
   final Future<List<SelectItem<T>>> Function(String search) values;
+  final List<SelectItem<T>>? loading;
   final SelectFieldSettings? settingsTextField;
   final SelectListSettings? settingsList;
   final void Function(T)? onSelected;
@@ -17,6 +18,7 @@ class SelectFieldFuture<T> extends StatefulWidget {
   const SelectFieldFuture({
     Key? key,
     required this.values,
+    this.loading,
     this.settingsTextField,
     this.settingsList,
     this.onSelected,
@@ -55,6 +57,8 @@ class _SelectFieldFutureState<T> extends State<SelectFieldFuture<T>> {
     _controller.addListener(() {
       if (isOpen) {
         debounce(() {
+          _values.value = widget.loading ?? [];
+
           widget.values(_controller.text).then((v) {
             var aux = v.map(
               (element) => element.copyWith(
