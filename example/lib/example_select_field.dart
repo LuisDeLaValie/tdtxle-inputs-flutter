@@ -53,6 +53,7 @@ class ExampleSelectField extends StatelessWidget {
                 ),
                 debounce: 1000,
                 values: (val) async {
+                  print("jajajaa");
                   final List<String> items = [
                     "One",
                     "Two",
@@ -99,7 +100,7 @@ class ExampleSelectField extends StatelessWidget {
                     title: Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                         begin: Alignment.bottomLeft,
+                          begin: Alignment.bottomLeft,
                           end: Alignment.topRight,
                           colors: [
                             Colors.grey.shade300,
@@ -114,7 +115,7 @@ class ExampleSelectField extends StatelessWidget {
                     subtitle: Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                         begin: Alignment.bottomLeft,
+                          begin: Alignment.bottomLeft,
                           end: Alignment.topRight,
                           colors: [
                             Colors.grey.shade300,

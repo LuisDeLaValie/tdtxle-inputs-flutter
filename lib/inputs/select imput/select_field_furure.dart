@@ -56,13 +56,13 @@ class _SelectFieldFutureState<T> extends State<SelectFieldFuture<T>> {
 
     _controller.addListener(() {
       if (isOpen) {
+        _values.value = widget.loading ?? [];
         debounce(() {
-          _values.value = widget.loading ?? [];
-
           widget.values(_controller.text).then((v) {
             var aux = v.map(
               (element) => element.copyWith(
                 onTap: () {
+                  setState(() => isOpen = false);
                   if (widget.onSelected != null) {
                     widget.onSelected!(element.value);
                   }
