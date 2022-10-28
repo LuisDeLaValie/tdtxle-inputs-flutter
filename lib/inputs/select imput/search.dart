@@ -3,7 +3,7 @@ part of 'select_imput.dart';
 /// Widget principal del buscador
 class Search<T> extends StatefulWidget {
   final ValueNotifier<List<SelectItem<T>>> values;
-  final SelectFieldSettings? settingsTextField;
+  final FieldSettings? settingsTextField;
   final SelectListSettings? settingsList;
   final bool? showCloseButton;
   final void Function()? onCloseButton;
@@ -29,7 +29,7 @@ class _SearchState<T> extends State<Search<T>> {
   final LayerLink _layerLink = LayerLink();
   late OverlayEntry _overlayEntry;
 
-  late SelectFieldSettings _settingsTextField;
+  late FieldSettings _settingsTextField;
   late SelectListSettings _settingsList;
 
   late FocusNode _focusNode;
@@ -41,7 +41,22 @@ class _SearchState<T> extends State<Search<T>> {
         widget.settingsTextField ?? const SelectFieldSettings();
     _settingsList = widget.settingsList ?? SelectListSettings();
 
-    _focusNode = _settingsTextField.focusNode ?? FocusNode();
+    if (_settingsTextField is SelectFieldSettings) {
+      _focusNode =
+          (_settingsTextField as SelectFieldSettings).focusNode ?? FocusNode();
+    } else if (_settingsTextField is SelectFormFieldSettings) {
+      _focusNode = (_settingsTextField as SelectFormFieldSettings).focusNode ??
+          FocusNode();
+    }
+
+    if (_settingsTextField is SelectFieldSettings) {
+      _focusNode =
+          (_settingsTextField as SelectFieldSettings).focusNode ?? FocusNode();
+    } else if (_settingsTextField is SelectFormFieldSettings) {
+      _focusNode = (_settingsTextField as SelectFormFieldSettings).focusNode ??
+          FocusNode();
+    }
+
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
         _overlayEntry = createOverlayEntry();
@@ -55,24 +70,45 @@ class _SearchState<T> extends State<Search<T>> {
       }
     });
 
-    _settingsTextField = _settingsTextField.copyWith(
-      focusNode: _focusNode,
-      onTap: () {
-        if (_focusNode.hasFocus && !_overlayEntry.mounted) {
-          _overlayEntry = createOverlayEntry();
-          Overlay.of(context)!.insert(_overlayEntry);
-          widget.isOpen?.call(true);
-        }
-      },
-    );
+    if (_settingsTextField is SelectFieldSettings) {
+      _settingsTextField = (_settingsTextField as SelectFieldSettings).copyWith(
+        focusNode: _focusNode,
+        onTap: () {
+          if (_focusNode.hasFocus && !_overlayEntry.mounted) {
+            _overlayEntry = createOverlayEntry();
+            Overlay.of(context)!.insert(_overlayEntry);
+            widget.isOpen?.call(true);
+          }
+        },
+      );
+    } else if (_settingsTextField is SelectFormFieldSettings) {
+      _settingsTextField =
+          (_settingsTextField as SelectFormFieldSettings).copyWith(
+        focusNode: _focusNode,
+        onTap: () {
+          if (_focusNode.hasFocus && !_overlayEntry.mounted) {
+            _overlayEntry = createOverlayEntry();
+            Overlay.of(context)!.insert(_overlayEntry);
+            widget.isOpen?.call(true);
+          }
+        },
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _layerLink,
-      child: _settingsTextField,
-    );
+    if (_settingsTextField is SelectFieldSettings) {
+      return CompositedTransformTarget(
+        link: _layerLink,
+        child: _settingsTextField as SelectFieldSettings,
+      );
+    } else {
+      return CompositedTransformTarget(
+        link: _layerLink,
+        child: _settingsTextField as SelectFormFieldSettings,
+      );
+    }
   }
 
   OverlayEntry createOverlayEntry() {
