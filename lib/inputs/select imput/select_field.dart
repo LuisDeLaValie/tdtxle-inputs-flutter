@@ -3,7 +3,7 @@ part of 'select_imput.dart';
 /// Widget para combertir el [Search] en un Field widget
 class SelectField<T> extends StatefulWidget {
   final List<SelectItem<T>> values;
-  final SelectFieldSettings? settingsTextField;
+  final FieldSettings? settingsTextField;
   final SelectListSettings? settingsList;
   final void Function(T)? onSelected;
 
@@ -48,8 +48,16 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
     var auxfield = widget.settingsTextField ?? const SelectFieldSettings();
     var auxlist = widget.settingsList ?? SelectListSettings();
 
-    _focusNode = auxfield.focusNode ?? FocusNode();
-    _controller = auxfield.controller ?? TextEditingController();
+    if (_settingsTextField is SelectFieldSettings) {
+      _focusNode = (auxfield as SelectFieldSettings).focusNode ?? FocusNode();
+      _controller = (auxfield as SelectFieldSettings).controller ??
+          TextEditingController();
+    } else if (_settingsTextField is SelectFormFieldSettings) {
+      _focusNode =
+          (auxfield as SelectFormFieldSettings).focusNode ?? FocusNode();
+      _controller = (auxfield as SelectFormFieldSettings).controller ??
+          TextEditingController();
+    }
     _values.value = widget.values;
 
     _controller.addListener(() {
@@ -85,10 +93,17 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
 
     _settingsList = auxlist;
 
-    _settingsTextField = auxfield.copyWith(
-      focusNode: _focusNode,
-      controller: _controller,
-    );
+    if (_settingsTextField is SelectFieldSettings) {
+      _settingsTextField = (auxfield as SelectFieldSettings).copyWith(
+        focusNode: _focusNode,
+        controller: _controller,
+      );
+    } else if (_settingsTextField is SelectFormFieldSettings) {
+      _settingsTextField = (auxfield as SelectFieldSettings).copyWith(
+        focusNode: _focusNode,
+        controller: _controller,
+      );
+    }
   }
 
   @override
