@@ -48,18 +48,16 @@ class _SelectFieldFutureState<T> extends State<SelectFieldFuture<T>> {
   @override
   void initState() {
     super.initState();
-    var auxfield = widget.settingsTextField ?? const SelectFieldSettings();
+    FieldSettings auxfield =
+        widget.settingsTextField ?? const SelectFieldSettings();
     var auxlist = widget.settingsList ?? SelectListSettings();
 
-    if (_settingsTextField is SelectFieldSettings) {
-      _focusNode = (auxfield as SelectFieldSettings).focusNode ?? FocusNode();
-      _controller = (auxfield as SelectFieldSettings).controller ??
-          TextEditingController();
-    } else if (_settingsTextField is SelectFormFieldSettings) {
-      _focusNode =
-          (auxfield as SelectFormFieldSettings).focusNode ?? FocusNode();
-      _controller = (auxfield as SelectFormFieldSettings).controller ??
-          TextEditingController();
+    if (auxfield is SelectFieldSettings) {
+      _focusNode = auxfield.focusNode ?? FocusNode();
+      _controller = auxfield.controller ?? TextEditingController();
+    } else if (auxfield is SelectFormFieldSettings) {
+      _focusNode = auxfield.focusNode ?? FocusNode();
+      _controller = auxfield.controller ?? TextEditingController();
     }
 
     _controller.addListener(() {
@@ -91,13 +89,13 @@ class _SelectFieldFutureState<T> extends State<SelectFieldFuture<T>> {
 
     _settingsList = auxlist;
 
-    if (_settingsTextField is SelectFieldSettings) {
-      _settingsTextField = (auxfield as SelectFieldSettings).copyWith(
+    if (auxfield is SelectFieldSettings) {
+      _settingsTextField = auxfield.copyWith(
         focusNode: _focusNode,
         controller: _controller,
       );
-    } else if (_settingsTextField is SelectFormFieldSettings) {
-      _settingsTextField = (auxfield as SelectFormFieldSettings).copyWith(
+    } else if (auxfield is SelectFormFieldSettings) {
+      _settingsTextField = auxfield.copyWith(
         focusNode: _focusNode,
         controller: _controller,
       );

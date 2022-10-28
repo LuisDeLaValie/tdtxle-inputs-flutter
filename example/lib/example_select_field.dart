@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tdtxle_inputs_flutter/inputs_tdtxle.dart';
 
+// ignore: must_be_immutable
 class ExampleSelectField extends StatelessWidget {
   ExampleSelectField({Key? key}) : super(key: key);
 
@@ -14,7 +15,6 @@ class ExampleSelectField extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
-          // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -40,97 +40,67 @@ class ExampleSelectField extends StatelessWidget {
                 showCloseButton: true,
               ),
               const SizedBox(height: 50),
-              SelectFieldFuture<String>(
-                settingsTextField: SelectFieldSettings(
-                  controller: controller,
-                  keyboardType: TextInputType.name,
-                  textCapitalization: TextCapitalization.words,
-                  textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(
-                    labelText: 'Select Field Future',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                debounce: 1000,
-                values: (val) async {
-                  print("jajajaa");
-                  final List<String> items = [
-                    "One",
-                    "Two",
-                    "Three",
-                    "Four",
-                    "Five",
-                    "Six",
-                    "Seven",
-                    "Eight",
-                  ];
-                  List<SelectItem<String>> list = [];
-                  for (var i = 0; i < items.length; i++) {
-                    if (items[i].toLowerCase().contains(val.toLowerCase())) {
-                      list.add(SelectItem(
-                        value: i.toString(),
-                        search: items[i],
-                        title: Text(items[i]),
-                      ));
+              SelectFieldFuture(
+                settingsTextField: SelectFormFieldSettings(
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(hintText: "TeléfonoSL"),
+                  validator: (val) {
+                    String? msg;
+                    var aux = val?.replaceAll('-', '');
+                    if ((aux ?? "").isEmpty) {
+                      msg = "Ingrese telefono";
+                    } else if (aux?.length != 10) {
+                      msg = "Numero no valido";
                     }
-                  }
-                  return Future.delayed(Duration(seconds: 6), () => list);
-                },
-                loading: List.generate(
-                  3,
-                  (index) => SelectItem(
-                    enabled: false,
-                    value: "",
-                    search: "search",
-                    leading: Container(
-                      width: 45,
-                      height: 45,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomLeft,
-                          end: Alignment.topRight,
-                          colors: [
-                            Colors.grey,
-                            Colors.grey.shade300,
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                    ),
-                    title: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomLeft,
-                          end: Alignment.topRight,
-                          colors: [
-                            Colors.grey.shade300,
-                            Colors.grey,
-                          ],
-                        ),
-                      ),
-                      width: 100,
-                      height: 5,
-                      margin: EdgeInsets.only(right: 100),
-                    ),
-                    subtitle: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomLeft,
-                          end: Alignment.topRight,
-                          colors: [
-                            Colors.grey.shade300,
-                            Colors.grey,
-                          ],
-                        ),
-                      ),
-                      width: 25,
-                      height: 3,
-                      margin: EdgeInsets.only(right: 150),
-                    ),
-                  ),
+
+                    return msg;
+                  },
                 ),
-                onSelected: (val) {},
-                showCloseButton: true,
+                values: (val) async {
+                  List<SelectItem<dynamic>> aa = [
+                    const SelectItem(
+                        value: 1,
+                        search: "777-777-7777",
+                        title: Text("777-777-7777")),
+                    const SelectItem(
+                        value: 1,
+                        search: "777-777-7777",
+                        title: Text("777-777-7777")),
+                    const SelectItem(
+                        value: 1,
+                        search: "777-777-7777",
+                        title: Text("777-777-7777")),
+                    const SelectItem(
+                        value: 1,
+                        search: "777-777-7777",
+                        title: Text("777-777-7777")),
+                    const SelectItem(
+                        value: 1,
+                        search: "777-777-7777",
+                        title: Text("777-777-7777")),
+                    const SelectItem(
+                        value: 1,
+                        search: "777-777-7777",
+                        title: Text("777-777-7777")),
+                    const SelectItem(
+                        value: 1,
+                        search: "777-777-7777",
+                        title: Text("777-777-7777")),
+                    const SelectItem(
+                        value: 1,
+                        search: "777-777-7777",
+                        title: Text("777-777-7777")),
+                    const SelectItem(
+                        value: 1,
+                        search: "777-777-7777",
+                        title: Text("777-777-7777")),
+                    const SelectItem(
+                        value: 1,
+                        search: "777-777-7777",
+                        title: Text("777-777-7777")),
+                  ];
+                  return aa;
+                },
               ),
               const SizedBox(height: 300),
             ],

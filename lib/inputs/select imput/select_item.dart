@@ -1,9 +1,12 @@
+// ignore_for_file: overridden_fields
+
 part of 'select_imput.dart';
 
 /// Item primcipal del buscador
 class SelectItem<T> extends ListTile {
   final T value;
   final String search;
+  
   @override
   final Widget title;
   @override

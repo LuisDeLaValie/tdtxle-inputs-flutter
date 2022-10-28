@@ -1,3 +1,5 @@
+// ignore_for_file: overridden_fields, override_on_non_overriding_member
+
 part of 'select_imput.dart';
 
 /// Estilo para el imput del buscardor

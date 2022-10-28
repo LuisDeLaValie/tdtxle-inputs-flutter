@@ -37,24 +37,13 @@ class _SearchState<T> extends State<Search<T>> {
   @override
   void initState() {
     super.initState();
-    _settingsTextField =
-        widget.settingsTextField ?? const SelectFieldSettings();
+    FieldSettings aux = widget.settingsTextField ?? const SelectFieldSettings();
     _settingsList = widget.settingsList ?? SelectListSettings();
 
-    if (_settingsTextField is SelectFieldSettings) {
-      _focusNode =
-          (_settingsTextField as SelectFieldSettings).focusNode ?? FocusNode();
-    } else if (_settingsTextField is SelectFormFieldSettings) {
-      _focusNode = (_settingsTextField as SelectFormFieldSettings).focusNode ??
-          FocusNode();
-    }
-
-    if (_settingsTextField is SelectFieldSettings) {
-      _focusNode =
-          (_settingsTextField as SelectFieldSettings).focusNode ?? FocusNode();
-    } else if (_settingsTextField is SelectFormFieldSettings) {
-      _focusNode = (_settingsTextField as SelectFormFieldSettings).focusNode ??
-          FocusNode();
+    if (aux is SelectFieldSettings) {
+      _focusNode = aux.focusNode ?? FocusNode();
+    } else if (aux is SelectFormFieldSettings) {
+      _focusNode = aux.focusNode ?? FocusNode();
     }
 
     _focusNode.addListener(() {
@@ -70,8 +59,8 @@ class _SearchState<T> extends State<Search<T>> {
       }
     });
 
-    if (_settingsTextField is SelectFieldSettings) {
-      _settingsTextField = (_settingsTextField as SelectFieldSettings).copyWith(
+    if (aux is SelectFieldSettings) {
+      _settingsTextField = aux.copyWith(
         focusNode: _focusNode,
         onTap: () {
           if (_focusNode.hasFocus && !_overlayEntry.mounted) {
@@ -81,9 +70,8 @@ class _SearchState<T> extends State<Search<T>> {
           }
         },
       );
-    } else if (_settingsTextField is SelectFormFieldSettings) {
-      _settingsTextField =
-          (_settingsTextField as SelectFormFieldSettings).copyWith(
+    } else if (aux is SelectFormFieldSettings) {
+      _settingsTextField = aux.copyWith(
         focusNode: _focusNode,
         onTap: () {
           if (_focusNode.hasFocus && !_overlayEntry.mounted) {
