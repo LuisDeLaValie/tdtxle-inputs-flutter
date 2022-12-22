@@ -37,7 +37,10 @@ class ImagenPerfilFormFile extends FormField<ImagenPerfil> {
                 : null,
             // autovalidate: autovalidate,
 
-            builder: (FormFieldState<ImagenPerfil> state) {
+            builder: (FormFieldState<ImagenPerfil> field) {
+              final _ImagenPerfilFormFileState state =
+                  field as _ImagenPerfilFormFileState;
+
               final InputDecoration effectiveDecoration =
                   const InputDecoration()
                       .applyDefaults(
@@ -120,4 +123,21 @@ class ImagenPerfilFormFile extends FormField<ImagenPerfil> {
                 ),
               );
             });
+  @override
+  FormFieldState<ImagenPerfil> createState() => _ImagenPerfilFormFileState();
+}
+
+class _ImagenPerfilFormFileState extends FormFieldState<ImagenPerfil> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialValue != null) {
+      var isweb = widget.initialValue!.path.contains("http");
+      if (isweb) {
+        setValue(ImagenPerfilWeb(path: widget.initialValue!.path));
+      } else {
+        setValue(ImagenPerfilWeb(path: widget.initialValue!.path));
+      }
+    }
+  }
 }
