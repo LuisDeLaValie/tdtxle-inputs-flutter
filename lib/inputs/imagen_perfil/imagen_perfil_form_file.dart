@@ -1,17 +1,14 @@
 part of 'imagen_perfil.dart';
 
-class ImagenPerfilFormFile extends FormField<String> {
+class ImagenPerfilFormFile extends FormField<ImagenPerfil> {
   @override
   // ignore: overridden_fields
-  final String? initialValue;
+  final FormFieldSetter<ImagenPerfil>? onSaved;
   @override
   // ignore: overridden_fields
-  final FormFieldSetter<String>? onSaved;
-  @override
-  // ignore: overridden_fields
-  final FormFieldValidator<String>? validator;
+  final FormFieldValidator<ImagenPerfil>? validator;
 
-  final Function(String?)? onChanged;
+  final Function(ImagenPerfil?)? onChanged;
   final Widget? child;
   final double? width;
   final double? height;
@@ -21,7 +18,7 @@ class ImagenPerfilFormFile extends FormField<String> {
 
   ImagenPerfilFormFile({
     Key? key,
-    this.initialValue,
+    String? initialValue,
     this.onSaved,
     this.validator,
     this.onChanged,
@@ -35,60 +32,91 @@ class ImagenPerfilFormFile extends FormField<String> {
             key: key,
             onSaved: onSaved,
             validator: validator,
-            initialValue: initialValue,
+            initialValue: (initialValue != null)
+                ? ImagenPerfil(path: initialValue)
+                : null,
             // autovalidate: autovalidate,
 
-            builder: (FormFieldState<String> state) {
-              return InkWell(
-                onTap: () async {
-                  String? path;
+            builder: (FormFieldState<ImagenPerfil> state) {
+              final InputDecoration effectiveDecoration =
+                  const InputDecoration()
+                      .applyDefaults(
+                        Theme.of(state.context).inputDecorationTheme,
+                      )
+                      .copyWith(
+                        contentPadding: const EdgeInsets.all(0),
+                        border: OutlineInputBorder(borderRadius: borderRadius),
+                        errorText: state.errorText,
+                      );
 
-                  switch (typePicker!) {
-                    case TypePicker.camara:
-                      path = (await SelcetImagen.cameraImage())?.path;
-                      break;
-                    case TypePicker.galeria:
-                      path = (await SelcetImagen.getImageLibrary())?.path;
-                      break;
-                    case TypePicker.seleccionar:
-                      path = (await SelcetImagen.selectCamera(
-                              contex: state.context))
-                          ?.path;
-                      break;
-                  }
+              return SizedBox(
+                width: width,
+                height: height,
+                child: InkWell(
+                  onTap: () async {
+                    ImagenPerfil? imagen;
 
-                  if (path != null) {
-                    if (onChanged != null) {
-                      onChanged(path);
+                    switch (typePicker!) {
+                      case TypePicker.camara:
+                        var path = (await SelcetImagen.cameraImage())?.path;
+                        if (path != null) imagen = ImagenPerfilWeb(path: path);
+                        break;
+                      case TypePicker.galeria:
+                        var path = (await SelcetImagen.getImageLibrary())?.path;
+                        if (path != null) imagen = ImagenPerfilFile(path: path);
+                        break;
+                      case TypePicker.seleccionar:
+                        var path = (await SelcetImagen.selectCamera(
+                                contex: state.context))
+                            ?.path;
+                        if (path != null) imagen = ImagenPerfilFile(path: path);
+                        break;
                     }
-                    state.didChange(path);
-                  }
-                },
-                child: SizedBox(
-                  height: height,
-                  width: width,
-                  child: Column(
-                    children: <Widget>[
-                      ImagenPerfilWidget(
-                        imgPath: state.value ?? "",
-                        elevation: elevation,
-                        color: state.hasError
-                            ? Colors.red[900]
-                            : Colors.white.withOpacity(0.001),
-                        borderRadius: borderRadius,
-                        width: width,
-                        height: height,
-                        child: child,
-                      ),
-                      state.hasError
-                          ? Text(
-                              state.errorText!,
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.red[900]),
-                            )
-                          : Container()
-                    ],
+
+                    if (imagen != null) {
+                      if (onChanged != null) {
+                        onChanged(imagen);
+                      }
+                      state.didChange(imagen);
+                    }
+                  },
+                  child: InputDecorator(
+                    decoration: effectiveDecoration,
+                    child: ImagenPerfilWidget(
+                      imgPath: state.value?.path ?? "",
+                      // elevation: elevation,
+                      borderRadius: borderRadius,
+                      width: width,
+                      height: height,
+                      child: child,
+                    ),
                   ),
+
+                  /* child: SizedBox(
+                    height: height,
+                    width: width,
+                    child: Column(
+                      children: <Widget>[
+                        ImagenPerfilWidget(
+                          imgPath: state.value?.path ?? "",
+                          elevation: elevation,
+                          color: state.hasError
+                              ? const InputDecoration().errorStyle?.color
+                              : Colors.white.withOpacity(0.001),
+                          borderRadius: borderRadius,
+                          width: width,
+                          height: height,
+                          child: child,
+                        ),
+                        state.hasError
+                            ? Text(
+                                state.errorText!,
+                                style: const InputDecoration().errorStyle,
+                              )
+                            : Container()
+                      ],
+                    ),
+                  ), */
                 ),
               );
             });

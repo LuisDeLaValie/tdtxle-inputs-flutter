@@ -3,11 +3,12 @@ part of 'imagen_perfil.dart';
 class ImagenPerfilWidget extends StatelessWidget {
   final String imgPath;
   final double? elevation;
-  final BorderRadius? borderRadius;
   final Color? color;
   final Widget? child;
   final double? height;
   final double? width;
+  final BorderRadius? borderRadius;
+  final Widget Function(BuildContext, Object, StackTrace?)? errorBuilder;
 
   const ImagenPerfilWidget({
     Key? key,
@@ -18,6 +19,7 @@ class ImagenPerfilWidget extends StatelessWidget {
     this.child,
     this.height,
     this.width,
+    this.errorBuilder,
   }) : super(key: key);
 
   @override
@@ -65,7 +67,7 @@ class ImagenPerfilWidget extends StatelessWidget {
       fit: BoxFit.cover,
       height: height,
       width: width,
-      errorBuilder: (_, c, s) => _error(),
+      errorBuilder: errorBuilder ?? (_, c, s) => _error(),
       loadingBuilder: (_, w, s) {
         return s != null
             ? SizedBox(
@@ -84,7 +86,7 @@ class ImagenPerfilWidget extends StatelessWidget {
       fit: BoxFit.cover,
       height: height,
       width: width,
-      errorBuilder: (_, c, s) => _error(),
+      errorBuilder: errorBuilder ?? (_, c, s) => _error(),
     );
   }
 }
