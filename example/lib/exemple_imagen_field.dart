@@ -34,16 +34,25 @@ class _ExempleImagenFieldState extends State<ExempleImagenField> {
               // const SizedBox(height: 120),
               // TextFormField()
               ImagenPerfilFormFile(
+                initialValue:
+                    "https://i.pinimg.com/originals/76/29/6b/76296bce27e1117092f4bb1411f1d94e.png",
                 width: 150,
                 height: 150,
                 borderRadius: BorderRadius.circular(100),
-                validator: ((value) {
-                  return "asdasddasdasd adsa sdas das";
-                }),
+                validator: (value) {
+                  // return "asdasddasdasd adsa sdas das";
+                  return null;
+                },
+                onSaved: (val) {
+                  if (val is ImagenPerfilWeb) {
+                    val.dowloader("path");
+                  }
+                },
               ),
               ElevatedButton(
                 onPressed: () {
                   _formKey.currentState!.validate();
+                  _formKey.currentState!.save();
                 },
                 child: const Text("VAlidar"),
               )

@@ -39,9 +39,9 @@ class ImagenPerfilWeb extends ImagenPerfil {
   ImagenPerfilWeb({required String path}) : super(path: path);
 
   Future<File> dowloader(String path) async {
-    var isweb = RegExp(r"https*://").hasMatch(path);
+    var isweb = RegExp(r"https*://").hasMatch(this.path);
     if (isweb) {
-      var imageData = await NetworkAssetBundle(Uri.parse(path)).load("");
+      var imageData = await NetworkAssetBundle(Uri.parse(this.path)).load("");
       var bytes = imageData.buffer.asUint8List();
       var newFile = await File(path).writeAsBytes(bytes);
       return newFile;
