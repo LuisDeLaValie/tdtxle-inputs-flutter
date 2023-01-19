@@ -6,7 +6,7 @@ part of 'select_imput.dart';
 class SelectItem<T> extends ListTile {
   final T value;
   final String search;
-  
+
   @override
   final Widget title;
   @override
@@ -18,16 +18,16 @@ class SelectItem<T> extends ListTile {
   @override
   final bool enabled;
 
-  const SelectItem(
-      {Key? key,
-      required this.value,
-      required this.search,
-      required this.title,
-      this.subtitle,
-      this.trailing,
-      this.leading,
-      this.enabled = true})
-      : super(
+  const SelectItem({
+    Key? key,
+    required this.value,
+    required this.search,
+    required this.title,
+    this.subtitle,
+    this.trailing,
+    this.leading,
+    this.enabled = true,
+  }) : super(
           key: key,
           title: title,
           subtitle: subtitle,
@@ -35,6 +35,7 @@ class SelectItem<T> extends ListTile {
           trailing: trailing,
           enabled: enabled,
         );
+
   const SelectItem._({
     Key? key,
     required this.value,

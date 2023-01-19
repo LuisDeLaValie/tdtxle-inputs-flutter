@@ -1,102 +1,107 @@
+// ignore_for_file: overridden_fields
+
 part of 'select_imput.dart';
 
 /// Widget principal del buscador
 class Search<T> extends StatefulWidget {
   final ValueNotifier<List<SelectItem<T>>> values;
-  final FieldSettings? settingsTextField;
-  final SelectListSettings? settingsList;
+  final TextField textFiled;
+  final myCOntainer cuerpo;
   final bool? showCloseButton;
   final void Function()? onCloseButton;
   final void Function(bool stats)? isOpen;
   final Widget? iconCloseButton;
+  final double elevation;
 
   const Search({
     Key? key,
     required this.values,
-    this.settingsTextField,
-    this.settingsList,
+    required this.textFiled,
+    required this.cuerpo,
     this.showCloseButton,
     this.onCloseButton,
-    this.iconCloseButton,
     this.isOpen,
+    this.iconCloseButton,
+    this.elevation = 0.0,
   }) : super(key: key);
+
+  void taphandle() {
+    final state = _SearchState();
+    state._listenFilter();
+  }
 
   @override
   State<Search<T>> createState() => _SearchState<T>();
 }
 
-class _SearchState<T> extends State<Search<T>> {
+class _SearchState<T> extends State<Search<T>> with WidgetsBindingObserver {
   final LayerLink _layerLink = LayerLink();
-  late OverlayEntry _overlayEntry;
-
-  late FieldSettings _settingsTextField;
-  late SelectListSettings _settingsList;
-
-  late FocusNode _focusNode;
-
+  OverlayEntry? _overlayEntry;
+  bool isOpen = false;
   @override
   void initState() {
     super.initState();
-    FieldSettings aux = widget.settingsTextField ?? const SelectFieldSettings();
-    _settingsList = widget.settingsList ?? SelectListSettings();
+    WidgetsBinding.instance.addObserver(this);
+    // widget.textFiled.focusNode!.addListener(_listenFilter);
+  }
 
-    if (aux is SelectFieldSettings) {
-      _focusNode = aux.focusNode ?? FocusNode();
-    } else if (aux is SelectFormFieldSettings) {
-      _focusNode = aux.focusNode ?? FocusNode();
+  void _listenFilter() {
+    final val = widget.textFiled.focusNode?.hasFocus ?? false;
+    if (val) {
+      _generarOverlay();
+    } else {
+      if (_overlayEntry?.mounted ?? false) _removerOverlay();
     }
+  }
 
-    _focusNode.addListener(() {
-      if (_focusNode.hasFocus) {
-        _overlayEntry = createOverlayEntry();
-        Overlay.of(context)!.insert(_overlayEntry);
-        widget.isOpen?.call(true);
+  var _isKeyboardVisible = false;
+  @override
+  void didChangeMetrics() {
+    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+    final newValue = bottomInset > 0.0;
+    final f = widget.textFiled.focusNode!.hasFocus;
+
+    if (newValue != _isKeyboardVisible) {
+      _isKeyboardVisible = newValue;
+
+      /* print("Keyboarddd: $_isKeyboardVisible");
+      if (newValue && f) {
+        print("si");
+        _generarOverlay();
       } else {
-        if (_overlayEntry.mounted) {
-          _overlayEntry.remove();
-          widget.isOpen?.call(false);
-        }
-      }
-    });
-
-    if (aux is SelectFieldSettings) {
-      _settingsTextField = aux.copyWith(
-        focusNode: _focusNode,
-        onTap: () {
-          if (_focusNode.hasFocus && !_overlayEntry.mounted) {
-            _overlayEntry = createOverlayEntry();
-            Overlay.of(context)!.insert(_overlayEntry);
-            widget.isOpen?.call(true);
-          }
-        },
-      );
-    } else if (aux is SelectFormFieldSettings) {
-      _settingsTextField = aux.copyWith(
-        focusNode: _focusNode,
-        onTap: () {
-          if (_focusNode.hasFocus && !_overlayEntry.mounted) {
-            _overlayEntry = createOverlayEntry();
-            Overlay.of(context)!.insert(_overlayEntry);
-            widget.isOpen?.call(true);
-          }
-        },
-      );
+        print("no");
+        if (_overlayEntry?.mounted ?? false) _removerOverlay();
+      } */
     }
   }
 
   @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (_settingsTextField is SelectFieldSettings) {
-      return CompositedTransformTarget(
-        link: _layerLink,
-        child: _settingsTextField as SelectFieldSettings,
-      );
-    } else {
-      return CompositedTransformTarget(
-        link: _layerLink,
-        child: _settingsTextField as SelectFormFieldSettings,
-      );
-    }
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: widget.textFiled,
+    );
+  }
+
+  void _generarOverlay() {
+    isOpen = true;
+    _overlayEntry = createOverlayEntry();
+    Overlay.of(context)!.insert(_overlayEntry!);
+    widget.isOpen?.call(isOpen);
+  }
+
+  void _removerOverlay() {
+    isOpen = false;
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    widget.isOpen?.call(isOpen);
   }
 
   OverlayEntry createOverlayEntry() {
@@ -109,13 +114,14 @@ class _SearchState<T> extends State<Search<T>> {
         left: offset.dx,
         top: offset.dy + size.height + 5.0,
         width: size.width,
+        height: widget.cuerpo.height,
         child: CompositedTransformFollower(
           link: _layerLink,
           showWhenUnlinked: false,
           offset: Offset(0.0, size.height + 5.0),
           child: Material(
-            elevation: _settingsList.elevation,
-            child: _settingsList.copyWith(
+            elevation: widget.elevation,
+            child: widget.cuerpo.copyWith(
               child: ValueListenableBuilder(
                   valueListenable: widget.values,
                   builder: (context, List<SelectItem<T>> v, c) {
@@ -130,8 +136,7 @@ class _SearchState<T> extends State<Search<T>> {
                               const Spacer(),
                               InkWell(
                                 onTap: () {
-                                  _overlayEntry.remove();
-                                  widget.isOpen?.call(false);
+                                  _removerOverlay();
                                   if (widget.onCloseButton != null) {
                                     widget.onCloseButton!.call();
                                   }
@@ -149,6 +154,125 @@ class _SearchState<T> extends State<Search<T>> {
           ),
         ),
       ),
+    );
+  }
+}
+
+// ignore: camel_case_types
+class myCOntainer extends Container {
+  @override
+  final AlignmentGeometry? alignment;
+  @override
+  final EdgeInsetsGeometry? padding;
+  @override
+  final Color? color;
+  @override
+  final Decoration? decoration;
+  @override
+  final Decoration? foregroundDecoration;
+
+  final double? width;
+
+  final double? height;
+  @override
+  final BoxConstraints? constraints;
+  @override
+  final EdgeInsetsGeometry? margin;
+  @override
+  final Matrix4? transform;
+  @override
+  final AlignmentGeometry? transformAlignment;
+  @override
+  final Clip clipBehavior;
+
+  myCOntainer({
+    super.key,
+    this.alignment,
+    this.padding,
+    this.color,
+    this.decoration,
+    this.foregroundDecoration,
+    this.width,
+    this.height,
+    this.constraints,
+    this.margin,
+    this.transform,
+    this.transformAlignment,
+    this.clipBehavior = Clip.none,
+  }) : super(
+          alignment: alignment,
+          padding: padding,
+          color: color,
+          decoration: decoration,
+          foregroundDecoration: foregroundDecoration,
+          width: width,
+          height: height,
+          constraints: constraints,
+          margin: margin,
+          transform: transform,
+          transformAlignment: transformAlignment,
+          clipBehavior: clipBehavior,
+        );
+
+  myCOntainer._({
+    this.alignment,
+    this.padding,
+    this.color,
+    this.decoration,
+    this.foregroundDecoration,
+    this.width,
+    this.height,
+    this.constraints,
+    this.margin,
+    this.transform,
+    this.transformAlignment,
+    this.clipBehavior = Clip.none,
+    Widget? child,
+  }) : super(
+          alignment: alignment,
+          padding: padding,
+          color: color,
+          decoration: decoration,
+          foregroundDecoration: foregroundDecoration,
+          width: width,
+          height: height,
+          constraints: constraints,
+          margin: margin,
+          transform: transform,
+          transformAlignment: transformAlignment,
+          clipBehavior: clipBehavior,
+          child: child,
+        );
+
+  myCOntainer copyWith({
+    AlignmentGeometry? alignment,
+    EdgeInsetsGeometry? padding,
+    Color? color,
+    Decoration? decoration,
+    Decoration? foregroundDecoration,
+    double? width,
+    double? height,
+    BoxConstraints? constraints,
+    EdgeInsetsGeometry? margin,
+    Matrix4? transform,
+    AlignmentGeometry? transformAlignment,
+    Clip? clipBehavior,
+    Widget? child,
+  }) {
+    return myCOntainer._(
+      alignment: alignment ?? this.alignment,
+      padding: padding ?? this.padding,
+      color: color ?? this.color,
+      decoration: decoration ?? this.decoration,
+      foregroundDecoration: foregroundDecoration ?? this.foregroundDecoration,
+      width: width ?? this.width,
+      height: height ?? this.height,
+      constraints: constraints ?? this.constraints,
+      margin: margin ?? this.margin,
+      transform: transform ?? this.transform,
+      transformAlignment: transformAlignment ?? this.transformAlignment,
+      clipBehavior: clipBehavior ?? this.clipBehavior,
+      child: child ?? this.child,
     );
   }
 }
