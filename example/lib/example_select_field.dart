@@ -26,6 +26,9 @@ class ExampleSelectField extends StatelessWidget {
                     border: OutlineInputBorder(),
                   ),
                 ),
+                settingsList: SelectListSettings(
+                  height: 100,
+                ),
                 values: const [
                   SelectItem(value: '1', search: 'One', title: Text('One')),
                   SelectItem(value: '2', search: 'Two', title: Text('Two')),

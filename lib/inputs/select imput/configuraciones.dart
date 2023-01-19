@@ -793,7 +793,7 @@ class SelectFormFieldSettings extends TextFormField implements FieldSettings {
 class SelectListSettings extends Container {
   SelectListSettings({
     Key? key,
-    this.elevation = 0.0,
+    this.elevation = 8.0,
     this.alignment,
     this.padding,
     this.color,

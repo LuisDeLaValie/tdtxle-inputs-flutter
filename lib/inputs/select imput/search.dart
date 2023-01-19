@@ -109,6 +109,7 @@ class _SearchState<T> extends State<Search<T>> {
         left: offset.dx,
         top: offset.dy + size.height + 5.0,
         width: size.width,
+        height: _settingsList.height,
         child: CompositedTransformFollower(
           link: _layerLink,
           showWhenUnlinked: false,
