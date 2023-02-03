@@ -94,32 +94,6 @@ class ImagenPerfilFormFile extends FormField<ImagenPerfil> {
                       child: child,
                     ),
                   ),
-
-                  /* child: SizedBox(
-                    height: height,
-                    width: width,
-                    child: Column(
-                      children: <Widget>[
-                        ImagenPerfilWidget(
-                          imgPath: state.value?.path ?? "",
-                          elevation: elevation,
-                          color: state.hasError
-                              ? const InputDecoration().errorStyle?.color
-                              : Colors.white.withOpacity(0.001),
-                          borderRadius: borderRadius,
-                          width: width,
-                          height: height,
-                          child: child,
-                        ),
-                        state.hasError
-                            ? Text(
-                                state.errorText!,
-                                style: const InputDecoration().errorStyle,
-                              )
-                            : Container()
-                      ],
-                    ),
-                  ), */
                 ),
               );
             });
@@ -136,7 +110,7 @@ class _ImagenPerfilFormFileState extends FormFieldState<ImagenPerfil> {
       if (isweb) {
         setValue(ImagenPerfilWeb(path: widget.initialValue!.path));
       } else {
-        setValue(ImagenPerfilWeb(path: widget.initialValue!.path));
+        setValue(ImagenPerfil(path: widget.initialValue!.path));
       }
     }
   }
