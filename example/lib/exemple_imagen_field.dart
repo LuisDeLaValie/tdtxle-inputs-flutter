@@ -10,6 +10,9 @@ class ExempleImagenField extends StatefulWidget {
 
 class _ExempleImagenFieldState extends State<ExempleImagenField> {
   final _formKey = GlobalKey<FormState>();
+
+  String imagen =
+      "/data/user/0/com.example.example/cache/scaled_image_picker889335626320001075.jpg";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,22 +25,18 @@ class _ExempleImagenFieldState extends State<ExempleImagenField> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              // ImagenPerfilWidget(
-              //   elevation: 2,
-              //   imgPath:
-              //       "https://i.pinimg.com/originals/76/29/6b/76296bce27e1117092f4bb1411f1d94e.png",
-              //   borderRadius: BorderRadius.circular(50),
-              //   color: Colors.white,
-              //   width: 150,
-              //   height: 150,
-              // ),
-              // const SizedBox(height: 120),
-              // TextFormField()
               ImagenPerfilFormFile(
+                initialValue: imagen,
                 width: 150,
                 height: 150,
                 borderRadius: BorderRadius.circular(100),
                 validator: ((value) {
+                  print(value);
+                  imagen =
+                      "/data/user/0/com.example.example/cache/imagenPrueba.jpg";
+                  (value as ImagenPerfilFile).mover(newPath: imagen);
+
+                  setState(() {});
                   return "asdasddasdasd adsa sdas das";
                 }),
               ),

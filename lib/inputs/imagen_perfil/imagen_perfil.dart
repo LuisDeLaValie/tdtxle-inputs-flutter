@@ -14,6 +14,10 @@ enum TypePicker { camara, galeria, seleccionar }
 class ImagenPerfil {
   final String path;
   ImagenPerfil({required this.path});
+  
+
+  @override
+  String toString() => 'ImagenPerfil(path: $path)';
 }
 
 class ImagenPerfilFile extends ImagenPerfil {
@@ -21,13 +25,14 @@ class ImagenPerfilFile extends ImagenPerfil {
 
   File getFile() => File(path);
 
-  Future<File> mover(String newPath) async {
+  Future<File> mover({required String newPath, bool delete=false}) async {
     var file = File(path);
     var exist = await file.exists();
 
     if (exist) {
-      var newFile = await file.copy(newPath);
-      await file.delete();
+      var newFile = File(newPath);
+      newFile.writeAsBytes(await file.readAsBytes());
+      if (delete) await file.delete();
       return newFile;
     } else {
       throw "No se encontro la imagen\n$path";
