@@ -103,14 +103,25 @@ class ImagenPerfilFormFile extends FormField<ImagenPerfil> {
 
 class _ImagenPerfilFormFileState extends FormFieldState<ImagenPerfil> {
   @override
+  void didUpdateWidget(FormField<ImagenPerfil> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _datos();
+  }
+
+  @override
   void initState() {
     super.initState();
+    _datos();
+  }
+
+  void _datos() {
     if (widget.initialValue != null) {
-      var isweb = widget.initialValue!.path.contains("http");
+      var isweb = RegExp(r"https*://").hasMatch(widget.initialValue!.path);
+
       if (isweb) {
         setValue(ImagenPerfilWeb(path: widget.initialValue!.path));
       } else {
-        setValue(ImagenPerfil(path: widget.initialValue!.path));
+        setValue(ImagenPerfilFile(path: widget.initialValue!.path));
       }
     }
   }
