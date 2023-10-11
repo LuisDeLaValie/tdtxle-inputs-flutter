@@ -40,7 +40,7 @@ class ImagenPerfilWidget extends StatelessWidget {
       borderRadius: borderRadius,
       color: elcolor,
       child: ClipRRect(
-        borderRadius: borderRadius,
+        borderRadius: borderRadius??BorderRadius.zero,
         child: imgen,
       ),
     );
