@@ -55,7 +55,7 @@ class ChipField<T> extends StatefulWidget {
   final Color? chipDeleteIconColor;
 
   const ChipField({
-    Key? key,
+    super.key,
     this.decoration = const InputDecoration(),
     this.initValue,
     this.onChanged,
@@ -63,9 +63,10 @@ class ChipField<T> extends StatefulWidget {
     this.chipLabelStyle,
     this.chipBackgroundColor,
     this.chipDeleteIconColor,
-  }) : super(key: key);
+  });
 
   @override
+  // ignore: library_private_types_in_public_api
   _ChipFieldState createState() => _ChipFieldState();
 }
 
@@ -222,7 +223,7 @@ class ChipFormField<T> extends FormField<List<ChipItem<T>?>> {
   final String? Function(List<ChipItem<T>?>?)? validator;
 
   ChipFormField({
-    Key? key,
+    super.key,
     this.decoration,
     this.onChanged,
     this.onSubmitted,
@@ -233,7 +234,6 @@ class ChipFormField<T> extends FormField<List<ChipItem<T>?>> {
     this.validator,
     this.initialValue,
   }) : super(
-          key: key,
           onSaved: onSaved,
           validator: validator,
           initialValue: initialValue,
@@ -264,16 +264,18 @@ class ChipDialog<T> extends StatefulWidget {
   final Chip Function(ChipItem<T>? vlue) chipBuilder;
   final Chip Function(ChipItem<T>? vlue)? selectChipBuilder;
   final void Function(List<T> val) onChanged;
+  
   const ChipDialog({
-    Key? key,
+    super.key,
     this.decoration,
     required this.data,
     required this.chipBuilder,
     this.selectChipBuilder,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
+  // ignore: library_private_types_in_public_api
   _ChipDialogState createState() => _ChipDialogState();
 }
 
@@ -323,11 +325,11 @@ class _ChipDialog extends StatefulWidget {
   final Chip Function(ChipItem? vlue) selectChipBuilder;
 
   const _ChipDialog({
-    Key? key,
+    super.key,
     required this.data,
     required this.chipBuilder,
     required this.selectChipBuilder,
-  }) : super(key: key);
+  });
 
   @override
   State<_ChipDialog> createState() => __ChipDialogState();

@@ -15,7 +15,7 @@ class SelectField<T> extends StatefulWidget {
   final Widget? iconCloseButton;
 
   const SelectField({
-    Key? key,
+    super.key,
     required this.values,
     this.settingsTextField,
     this.settingsList,
@@ -24,7 +24,7 @@ class SelectField<T> extends StatefulWidget {
     this.showCloseButton,
     this.onCloseButton,
     this.iconCloseButton,
-  }) : super(key: key);
+  });
 
   @override
   State<SelectField<T>> createState() => _SelectFieldState<T>();

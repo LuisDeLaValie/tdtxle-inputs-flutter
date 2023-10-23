@@ -11,7 +11,7 @@ class Search<T> extends StatefulWidget {
   final Widget? iconCloseButton;
 
   const Search({
-    Key? key,
+    super.key,
     required this.values,
     this.settingsTextField,
     this.settingsList,
@@ -19,7 +19,7 @@ class Search<T> extends StatefulWidget {
     this.onCloseButton,
     this.iconCloseButton,
     this.isOpen,
-  }) : super(key: key);
+  });
 
   @override
   State<Search<T>> createState() => _SearchState<T>();
@@ -49,7 +49,7 @@ class _SearchState<T> extends State<Search<T>> {
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
         _overlayEntry = createOverlayEntry();
-        Overlay.of(context)!.insert(_overlayEntry);
+        Overlay.of(context).insert(_overlayEntry);
         widget.isOpen?.call(true);
       } else {
         if (_overlayEntry.mounted) {
@@ -65,7 +65,7 @@ class _SearchState<T> extends State<Search<T>> {
         onTap: () {
           if (_focusNode.hasFocus && !_overlayEntry.mounted) {
             _overlayEntry = createOverlayEntry();
-            Overlay.of(context)!.insert(_overlayEntry);
+            Overlay.of(context).insert(_overlayEntry);
             widget.isOpen?.call(true);
           }
         },
@@ -76,7 +76,7 @@ class _SearchState<T> extends State<Search<T>> {
         onTap: () {
           if (_focusNode.hasFocus && !_overlayEntry.mounted) {
             _overlayEntry = createOverlayEntry();
-            Overlay.of(context)!.insert(_overlayEntry);
+            Overlay.of(context).insert(_overlayEntry);
             widget.isOpen?.call(true);
           }
         },

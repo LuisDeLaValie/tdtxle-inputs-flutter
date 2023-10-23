@@ -11,7 +11,7 @@ class ImagenPerfilWidget extends StatelessWidget {
   final Widget Function(BuildContext, Object, StackTrace?)? errorBuilder;
 
   const ImagenPerfilWidget({
-    Key? key,
+    super.key,
     required this.imgPath,
     this.elevation,
     this.borderRadius,
@@ -20,7 +20,7 @@ class ImagenPerfilWidget extends StatelessWidget {
     this.height,
     this.width,
     this.errorBuilder,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

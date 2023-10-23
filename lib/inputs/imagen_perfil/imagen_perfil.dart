@@ -21,7 +21,7 @@ class ImagenPerfil {
 }
 
 class ImagenPerfilFile extends ImagenPerfil {
-  ImagenPerfilFile({required String path}) : super(path: path);
+  ImagenPerfilFile({required super.path});
 
   File getFile() => File(path);
 
@@ -41,7 +41,7 @@ class ImagenPerfilFile extends ImagenPerfil {
 }
 
 class ImagenPerfilWeb extends ImagenPerfil {
-  ImagenPerfilWeb({required String path}) : super(path: path);
+  ImagenPerfilWeb({required super.path});
 
   Future<File> dowloader(String path) async {
     var isweb = RegExp(r"https*://").hasMatch(this.path);

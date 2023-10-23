@@ -16,7 +16,7 @@ class SelectFieldFuture<T> extends StatefulWidget {
   final Widget? iconCloseButton;
 
   const SelectFieldFuture({
-    Key? key,
+    super.key,
     required this.values,
     this.loading,
     this.settingsTextField,
@@ -26,7 +26,7 @@ class SelectFieldFuture<T> extends StatefulWidget {
     this.showCloseButton,
     this.onCloseButton,
     this.iconCloseButton,
-  }) : super(key: key);
+  });
 
   @override
   State<SelectFieldFuture<T>> createState() => _SelectFieldFutureState<T>();

@@ -40,6 +40,7 @@ class SelcetImagen {
               child: const Text('Camara'),
               onPressed: () async {
                 final file = await cameraImage();
+                // ignore: use_build_context_synchronously
                 Navigator.pop(context, file);
               },
             ),
@@ -47,16 +48,17 @@ class SelcetImagen {
               child: const Text('Galería'),
               onPressed: () async {
                 final file = await getImageLibrary();
+                // ignore: use_build_context_synchronously
                 Navigator.pop(context, file);
               },
             ),
           ],
           cancelButton: CupertinoActionSheetAction(
-            child: const Text('Cancel'),
             isDefaultAction: true,
             onPressed: () {
               Navigator.pop(context, null);
             },
+            child: const Text('Cancel'),
           )),
     );
   }

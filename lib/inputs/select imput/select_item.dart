@@ -19,7 +19,7 @@ class SelectItem<T> extends ListTile {
   final bool enabled;
 
   const SelectItem(
-      {Key? key,
+      {super.key,
       required this.value,
       required this.search,
       required this.title,
@@ -28,7 +28,6 @@ class SelectItem<T> extends ListTile {
       this.leading,
       this.enabled = true})
       : super(
-          key: key,
           title: title,
           subtitle: subtitle,
           leading: leading,
@@ -36,7 +35,7 @@ class SelectItem<T> extends ListTile {
           enabled: enabled,
         );
   const SelectItem._({
-    Key? key,
+    super.key,
     required this.value,
     required this.search,
     required this.title,
@@ -44,14 +43,12 @@ class SelectItem<T> extends ListTile {
     this.trailing,
     this.leading,
     this.enabled = true,
-    Function()? onTap,
+    Function()? super.onTap,
   }) : super(
-          key: key,
           title: title,
           subtitle: subtitle,
           leading: leading,
           trailing: trailing,
-          onTap: onTap,
           enabled: enabled,
         );
 

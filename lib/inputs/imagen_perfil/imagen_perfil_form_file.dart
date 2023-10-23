@@ -17,7 +17,7 @@ class ImagenPerfilFormFile extends FormField<ImagenPerfil> {
   final BorderRadius borderRadius;
 
   ImagenPerfilFormFile({
-    Key? key,
+    super.key,
     String? initialValue,
     this.onSaved,
     this.validator,
@@ -29,7 +29,6 @@ class ImagenPerfilFormFile extends FormField<ImagenPerfil> {
     this.elevation = 0,
     this.borderRadius = BorderRadius.zero,
   }) : super(
-            key: key,
             onSaved: onSaved,
             validator: validator,
             initialValue: (initialValue != null)
@@ -69,6 +68,7 @@ class ImagenPerfilFormFile extends FormField<ImagenPerfil> {
                         if (path != null) imagen = ImagenPerfilFile(path: path);
                         break;
                       case TypePicker.seleccionar:
+                        // ignore: use_build_context_synchronously
                         var path = (await SelcetImagen.selectCamera(
                                 contex: state.context))
                             ?.path;
