@@ -10,14 +10,17 @@ class ExampleChipInput extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Chip Input"),
       ),
-      body: const Column(
+      body: Column(
         children: [
-          SizedBox(height: 50),
-          ChipField(
+          const SizedBox(height: 50),
+          const ChipField(
             decoration: InputDecoration(border: OutlineInputBorder()),
           ),
-          SizedBox(height: 150),
-          // ChipFormField(),
+          const SizedBox(height: 80),
+          ChipFormField<String>(
+            decoration: const InputDecoration(border: OutlineInputBorder()),
+            
+          ),
         ],
       ),
     );

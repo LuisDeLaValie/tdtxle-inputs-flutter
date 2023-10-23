@@ -9,10 +9,10 @@ class ChipField<T> extends StatefulWidget {
   final InputDecoration? decoration;
 
   /// Start the [ChipField], if it does not start it will appear empty
-  final List<ChipItem<T>?>? initValue;
+  final ChipListCallback<T>? initValue;
 
-  final Function(List<ChipItem<T>?> val)? onChanged;
-  final Function(List<ChipItem<T>?> val)? onSubmitted;
+  final Function(ChipListCallback<T> val)? onChanged;
+  final Function(ChipListCallback<T> val)? onSubmitted;
 
   /// The style to be applied to the chip's label.
   ///
@@ -52,11 +52,11 @@ class ChipField<T> extends StatefulWidget {
 
   @override
   // ignore: library_private_types_in_public_api
-  _ChipFieldState createState() => _ChipFieldState();
+  _ChipFieldState<T> createState() => _ChipFieldState<T>();
 }
 
-class _ChipFieldState extends State<ChipField> {
-  List<ChipItem?> _lsitChip = [];
+class _ChipFieldState<T> extends State<ChipField<T>> {
+  ChipListCallback<T> _lsitChip = [];
   bool focus = false;
 
   @override
@@ -94,14 +94,12 @@ class _ChipFieldState extends State<ChipField> {
       ],
     );
 
-    final decoracion =
-        widget.decoration!.copyWith(contentPadding: const EdgeInsets.all(5));
+    final decoracion = (widget.decoration ?? const InputDecoration())
+        .copyWith(contentPadding: const EdgeInsets.all(5));
 
     return InkWell(
       onTap: () {
-        setState(() {
-          focus = true;
-        });
+        setState(() => focus = true);
         myFocusNode.requestFocus();
       },
       child: InputDecorator(
@@ -122,7 +120,7 @@ class _ChipFieldState extends State<ChipField> {
               backgroundColor: widget.chipBackgroundColor,
               deleteIconColor: widget.chipDeleteIconColor,
               //___________
-              label: Text(e!.tex),
+              label: Text(e.tex),
               onDeleted: () {
                 setState(() {
                   _lsitChip.remove(e);
@@ -137,15 +135,17 @@ class _ChipFieldState extends State<ChipField> {
   void onChangedChip(String val) {
     if (val.contains(',')) {
       final str = val.substring(0, val.length - 1);
-      _lsitChip.add(ChipItem(tex: str));
+      _lsitChip.add(ChipItem<T>(tex: str));
       textcontroler.text = "";
-      if (widget.onChanged != null) widget.onChanged!(_lsitChip);
+
+      if (widget.onChanged != null) widget.onChanged?.call(_lsitChip);
+
       setState(() {});
     }
   }
 
   void onSubmittedChip(String val) {
-    _lsitChip.add(ChipItem(tex: val));
+    // _lsitChip.add(ChipItem<T>(tex: val));
     textcontroler.text = "";
     if (widget.onChanged != null) widget.onChanged!(_lsitChip);
     if (widget.onSubmitted != null) widget.onSubmitted!(_lsitChip);

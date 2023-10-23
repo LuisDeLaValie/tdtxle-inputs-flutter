@@ -1,7 +1,6 @@
-
 part of 'chip_imput.dart';
 
-class ChipFormField<T> extends FormField<List<ChipItem<T>?>> {
+class ChipFormField<T> extends FormField<ChipListCallback<T>> {
   /// The decoration to show around the field.
   ///
   /// By default, draws a horizontal line under the text field but can be configured to show an icon, label, hint text, and error text.
@@ -9,13 +8,8 @@ class ChipFormField<T> extends FormField<List<ChipItem<T>?>> {
   /// Specify null to remove the decoration entirely (including the extra padding introduced by the decoration to save space for the labels).
   final InputDecoration? decoration;
 
-  /// An optional value to initialize the form field to, or null otherwise.
-  @override
-  // ignore: overridden_fields
-  final List<ChipItem<T>>? initialValue;
-
-  final Function(List<ChipItem<T>?> val)? onChanged;
-  final Function(List<ChipItem<T>?> val)? onSubmitted;
+  final Function(ChipListCallback<T>? val)? onChanged;
+  final Function(ChipListCallback<T>? val)? onSubmitted;
 
   /// The style to be applied to the chip's label.
   ///
@@ -42,47 +36,55 @@ class ChipFormField<T> extends FormField<List<ChipItem<T>?>> {
   /// The [Color] for the delete icon chip's. The default is based on the ambient [Icon ThemeData.color].
   final Color? chipDeleteIconColor;
 
-  @override
-  // ignore: overridden_fields
-  final void Function(List<ChipItem<T>?>?)? onSaved;
-  @override
-  // ignore: overridden_fields
-  final String? Function(List<ChipItem<T>?>?)? validator;
-
   ChipFormField({
-    super.key,
     this.decoration,
     this.onChanged,
     this.onSubmitted,
     this.chipLabelStyle,
     this.chipBackgroundColor,
     this.chipDeleteIconColor,
-    this.onSaved,
-    this.validator,
-    this.initialValue,
+    super.key,
+    super.onSaved,
+    super.validator,
+    super.initialValue,
+    super.enabled = true,
+    super.autovalidateMode,
+    super.restorationId,
   }) : super(
-          onSaved: onSaved,
-          validator: validator,
-          initialValue: initialValue,
-          builder: (FormFieldState<List<ChipItem<T>?>?> state) {
+          builder: (field) {
+            final state = field as _ChipFormFieldState<T>;
+
             return ChipField<T>(
               chipBackgroundColor: chipBackgroundColor,
               chipDeleteIconColor: chipDeleteIconColor,
               chipLabelStyle: chipLabelStyle,
               decoration: decoration,
               initValue: initialValue,
-              onChanged: (val) {
-                state.didChange(val);
-                onChanged!(val);
-              },
-              onSubmitted: (val) {
-                onChanged!(val);
-                onSubmitted!(val);
-                state.didChange(val);
-              },
+              onChanged: state.didChange,
+              onSubmitted: state.onSubmitted,
             );
           },
         );
+
+  @override
+  FormFieldState<ChipListCallback<T>> createState() => _ChipFormFieldState();
+}
+
+class _ChipFormFieldState<T> extends FormFieldState<ChipListCallback<T>> {
+  @override
+  ChipFormField<T> get widget => super.widget as ChipFormField<T>;
+
+  void onSubmitted(List<ChipItem<T>>? value) {
+    widget.onSubmitted?.call(value);
+    super.didChange(value);
+    // widget.onChanged?.call(value);
+  }
+
+  @override
+  void didChange(List<ChipItem<T>>? value) {
+    super.didChange(value);
+    widget.onChanged?.call(value);
+  }
 }
 
 class ChipDialog<T> extends StatefulWidget {
@@ -91,7 +93,7 @@ class ChipDialog<T> extends StatefulWidget {
   final Chip Function(ChipItem<T>? vlue) chipBuilder;
   final Chip Function(ChipItem<T>? vlue)? selectChipBuilder;
   final void Function(List<T> val) onChanged;
-  
+
   const ChipDialog({
     super.key,
     this.decoration,
