@@ -1,5 +1,7 @@
 part of 'chip_imput.dart';
 
+typedef SearchValue<T> = ValueNotifier<List<SelectItemBase<T>>>;
+
 class ChipField<T> extends StatefulWidget {
   /// The decoration to show around the field.
   ///
@@ -39,6 +41,8 @@ class ChipField<T> extends StatefulWidget {
   /// The [Color] for the delete icon chip's. The default is based on the ambient [Icon ThemeData.color].
   final Color? chipDeleteIconColor;
 
+  final List<ChipItem<T>>? listaBase;
+
   const ChipField({
     super.key,
     this.decoration = const InputDecoration(),
@@ -48,6 +52,7 @@ class ChipField<T> extends StatefulWidget {
     this.chipLabelStyle,
     this.chipBackgroundColor,
     this.chipDeleteIconColor,
+    this.listaBase,
   });
 
   @override
@@ -58,22 +63,37 @@ class ChipField<T> extends StatefulWidget {
 class _ChipFieldState<T> extends State<ChipField<T>> {
   ChipListCallback<T> _lsitChip = [];
   bool focus = false;
+  SearchValue<T> valuesSearch = SearchValue<T>([]);
 
   @override
   void initState() {
     _lsitChip = widget.initValue ?? [];
     super.initState();
 
+    if (widget.listaBase != null) {
+      filtrat("");
+    }
+
     myFocusNode.addListener(() {
       if (myFocusNode.hasFocus == false) {
         setState(() => focus = false);
+        controller.close();
       }
     });
+  } 
+
+  @override
+  void didUpdateWidget(covariant ChipField<T> oldWidget) {
+    if (oldWidget.listaBase != this._lsitChip) {
+      setState(() {});
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   final textcontroler = TextEditingController();
   final myFocusNode = FocusNode();
-
+  final MenuDesplegableController<T> controller =
+      MenuDesplegableController<T>();
   @override
   Widget build(BuildContext context) {
     final cuerpu = Wrap(
@@ -97,17 +117,40 @@ class _ChipFieldState<T> extends State<ChipField<T>> {
     final decoracion = (widget.decoration ?? const InputDecoration())
         .copyWith(contentPadding: const EdgeInsets.all(5));
 
-    return InkWell(
-      onTap: () {
-        setState(() => focus = true);
-        myFocusNode.requestFocus();
-      },
-      child: InputDecorator(
-        decoration: decoracion,
-        isEmpty: !focus && _lsitChip.isEmpty,
-        child: cuerpu,
-      ),
-    );
+    late Widget body;
+
+    if (widget.listaBase == null) {
+      body = InkWell(
+        onTap: () {
+          setState(() => focus = true);
+          myFocusNode.requestFocus();
+        },
+        child: InputDecorator(
+          decoration: decoracion,
+          isEmpty: !focus && _lsitChip.isEmpty,
+          child: cuerpu,
+        ),
+      );
+    } else {
+      body = MenuDesplegableTextFiles(
+        values: valuesSearch,
+        controller: controller,
+        widget: InkWell(
+          onTap: () {
+            setState(() => focus = true);
+            myFocusNode.requestFocus();
+            controller.open();
+          },
+          child: InputDecorator(
+            decoration: decoracion,
+            isEmpty: !focus && _lsitChip.isEmpty,
+            child: cuerpu,
+          ),
+        ),
+      );
+    }
+
+    return body;
   }
 
   List<Widget> listaChip() {
@@ -119,7 +162,6 @@ class _ChipFieldState<T> extends State<ChipField<T>> {
               labelStyle: widget.chipLabelStyle,
               backgroundColor: widget.chipBackgroundColor,
               deleteIconColor: widget.chipDeleteIconColor,
-              //___________
               label: Text(e.tex),
               onDeleted: () {
                 setState(() {
@@ -132,14 +174,37 @@ class _ChipFieldState<T> extends State<ChipField<T>> {
         .toList();
   }
 
+  void filtrat(String filter) {
+    final filtro = widget.listaBase!.where(
+      (element) => element.tex.toLowerCase().contains(filter.toLowerCase()),
+    );
+
+    valuesSearch.value = filtro
+        .map(
+          (e) => SelectItemTap(
+            value: e.value as T,
+            search: e.tex,
+            title: Text(e.tex),
+            onTap: () {
+              onChangedChip("${e.tex},");
+            },
+          ),
+        )
+        .toList();
+  }
+
   void onChangedChip(String val) {
+    if (widget.listaBase != null) {
+      filtrat(val);
+    }
     if (val.contains(',')) {
       final str = val.substring(0, val.length - 1);
       _lsitChip.add(ChipItem<T>(tex: str));
       textcontroler.text = "";
 
       if (widget.onChanged != null) widget.onChanged?.call(_lsitChip);
-
+      // controller.open();
+      
       setState(() {});
     }
   }

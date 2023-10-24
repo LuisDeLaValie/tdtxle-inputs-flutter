@@ -36,12 +36,15 @@ class ChipFormField<T> extends FormField<ChipListCallback<T>> {
   /// The [Color] for the delete icon chip's. The default is based on the ambient [Icon ThemeData.color].
   final Color? chipDeleteIconColor;
 
+  final List<ChipItem<T>>? listaBase;
+
   ChipFormField({
     this.decoration,
     this.onChanged,
     this.onSubmitted,
     this.chipLabelStyle,
     this.chipBackgroundColor,
+    this.listaBase,
     this.chipDeleteIconColor,
     super.key,
     super.onSaved,
@@ -60,6 +63,7 @@ class ChipFormField<T> extends FormField<ChipListCallback<T>> {
               chipLabelStyle: chipLabelStyle,
               decoration: decoration,
               initValue: initialValue,
+              listaBase: listaBase,
               onChanged: state.didChange,
               onSubmitted: state.onSubmitted,
             );
